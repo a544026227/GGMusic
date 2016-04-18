@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import gl.com.ggmusic.bean.MusicData;
 import gl.com.ggmusic.music.PlayMusicTool;
 import gl.com.ggmusic.widget.BottomMusicView;
 
@@ -18,18 +19,14 @@ public class PlayMusicService extends Service {
     public void onCreate() {
         super.onCreate();
         musicBinder = new MusicBinder();
-        playMusicTool = new PlayMusicTool(this);
+        playMusicTool = new PlayMusicTool();
 
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        int tag = intent.getIntExtra(BottomMusicView.TAG_START_MUSIC, -1);
-        if (tag == PlayMusicTool.START) {
-            playMusicTool.start();
-        }else if(tag == PlayMusicTool.PAUSE){
-            playMusicTool.puase();
-        }
+        MusicData musicData = intent.getParcelableExtra(BottomMusicView.TAG_START_MUSIC);
+        playMusicTool.play(musicData);
         return super.onStartCommand(intent, flags, startId);
     }
 

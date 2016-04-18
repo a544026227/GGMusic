@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.PixelFormat;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,7 +23,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import gl.com.ggmusic.R;
 import gl.com.ggmusic.bean.BottomMusicEvent;
-import gl.com.ggmusic.music.PlayMusicTool;
+import gl.com.ggmusic.bean.MusicData;
+import gl.com.ggmusic.constants.Constants;
 import gl.com.ggmusic.service.PlayMusicService;
 
 /**
@@ -136,10 +138,16 @@ public class BottomMusicView implements View.OnClickListener {
      * 开启并绑定播放音乐的Servie,同时向Servie发送一个请求，播放音乐
      */
     private void bindService() {
-        Intent service = new Intent(context.getApplicationContext(), PlayMusicService.class);
         //如果音乐正在播放，告诉Servie暂停，如果没播放，告诉Servie播放
-        service.putExtra(TAG_START_MUSIC,
-                isPlaying ? PlayMusicTool.PAUSE : PlayMusicTool.START);
+        MusicData musicData = new MusicData(Constants.SIMPLE_MUSIC);
+        musicData.setStatus(isPlaying ? MusicData.PAUSE : MusicData.START);
+
+
+        Intent service = new Intent(context.getApplicationContext(), PlayMusicService.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(TAG_START_MUSIC, musicData);
+        service.putExtras(bundle);
+        //同时start和bindService，不然后台音乐会自动退出
         context.getApplicationContext().startService(service);
         context.getApplicationContext().bindService
                 (service, connection, Activity.BIND_AUTO_CREATE);

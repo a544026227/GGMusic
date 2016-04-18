@@ -18,11 +18,7 @@ import gl.com.ggmusic.activity.main.MainFriendsView;
 import gl.com.ggmusic.activity.main.MainMusicView;
 import gl.com.ggmusic.adapter.CommonUseViewPagerAdapter;
 import gl.com.ggmusic.bean.BottomMusicEvent;
-import gl.com.ggmusic.constants.Constants;
-import gl.com.ggmusic.network.GGHttp;
-import gl.com.ggmusic.network.HttpResponse;
 import gl.com.ggmusic.widget.BottomMusicView;
-import rx.functions.Action1;
 
 
 /**
@@ -131,13 +127,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 showViewPager(2);
                 break;
             case R.id.searchImageView:
-                new GGHttp(Constants.TEST_GET_URL)
-                        .send(new Action1<HttpResponse>() {
-                            @Override
-                            public void call(HttpResponse httpResponse) {
-                                showToast(httpResponse.getResponseContent());
-                            }
-                        });
+
                 break;
             default:
                 break;
