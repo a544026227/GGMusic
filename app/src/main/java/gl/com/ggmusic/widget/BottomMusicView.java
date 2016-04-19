@@ -139,7 +139,7 @@ public class BottomMusicView implements View.OnClickListener {
      */
     private void bindService() {
         //如果音乐正在播放，告诉Servie暂停，如果没播放，告诉Servie播放
-        MusicData musicData = new MusicData(Constants.SIMPLE_MUSIC);
+        MusicData musicData = new MusicData(Constants.SIMPLE_MUSIC2);
         musicData.setStatus(isPlaying ? MusicData.PAUSE : MusicData.START);
 
 

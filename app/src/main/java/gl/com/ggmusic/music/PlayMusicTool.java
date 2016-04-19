@@ -41,7 +41,10 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
         if (musicData.getStatus() == MusicData.START) {
             playUrlMusic(musicData.getUrl());
         } else if (musicData.getStatus() == MusicData.PAUSE) {//停止播放音乐
-            pause();
+            if(mediaPlayer.isPlaying()){
+                pause();
+            }
+
         }
     }
 
