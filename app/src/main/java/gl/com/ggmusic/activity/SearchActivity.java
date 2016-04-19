@@ -3,27 +3,37 @@ package gl.com.ggmusic.activity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import gl.com.ggmusic.R;
 import gl.com.ggmusic.adapter.SearchHintAdapter;
+import gl.com.ggmusic.adapter.SearchListAdapter;
 import gl.com.ggmusic.bean.KugouInfoJson;
 import gl.com.ggmusic.bean.KugouSearchHintJson;
 import gl.com.ggmusic.bean.KugouSearchListJson;
+import gl.com.ggmusic.bean.MusicData;
 import gl.com.ggmusic.constants.URL;
 import gl.com.ggmusic.network.GGHttp;
+import gl.com.ggmusic.service.PlayMusicService;
 import gl.com.ggmusic.util.MyUtil;
 import rx.functions.Action1;
 
 public class SearchActivity extends BaseActivity {
 
-    private android.widget.ListView listView;
-    private android.widget.EditText searchEditText;
+    private MaterialEditText searchEditText;
+    private ImageView deleteImageView;
 
-    private SearchHintAdapter adapter;
+    private SearchHintAdapter searchHintAdapter;
+    private SearchListAdapter searchListAdapter;
+
+    private ListView searchHintListView;
+    private ListView searchListListView;
 
 
     public SearchActivity() {
@@ -32,17 +42,23 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     void init() {
-        this.listView = (ListView) findViewById(R.id.listView);
-        this.searchEditText = (EditText) findViewById(R.id.searchEditText);
+        initToolBar("");
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_search_top, toolbar);
 
-        adapter = new SearchHintAdapter(context);
+        this.searchListListView = (ListView) findViewById(R.id.resultListView);
+        this.searchHintListView = (ListView) findViewById(R.id.hintListView);
+        this.searchEditText = (MaterialEditText) view.findViewById(R.id.searchEditText);
+        this.deleteImageView = (ImageView) view.findViewById(R.id.deleteImageView);
+
+        searchHintAdapter = new SearchHintAdapter(context);
+        searchListAdapter = new SearchListAdapter(context);
     }
 
     @Override
     void initView() {
-        initToolBar("设置");
 
-        listView.setAdapter(adapter);
+        searchHintListView.setAdapter(searchHintAdapter);
+        searchListListView.setAdapter(searchListAdapter);
 
     }
 
@@ -69,7 +85,11 @@ public class SearchActivity extends BaseActivity {
         ggHttpSearchList.send(new Action1<KugouSearchListJson>() {
             @Override
             public void call(KugouSearchListJson kugouSearchListJson) {
-                getInfo(kugouSearchListJson.getData().getInfo().get(0).getHash());
+                searchHintAdapter.getList().clear();
+                searchHintAdapter.notifyDataSetChanged();
+                searchListAdapter.getList().clear();
+                searchListAdapter.getList().addAll(kugouSearchListJson.getData().getInfo());
+                searchListAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -89,9 +109,9 @@ public class SearchActivity extends BaseActivity {
         ggHttpSearchHint.send(new Action1<KugouSearchHintJson>() {
             @Override
             public void call(KugouSearchHintJson kugouSearchHintJson) {
-                adapter.getList().clear();
-                adapter.getList().addAll(kugouSearchHintJson.getData());
-                adapter.notifyDataSetChanged();
+                searchHintAdapter.getList().clear();
+                searchHintAdapter.getList().addAll(kugouSearchHintJson.getData());
+                searchHintAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -101,19 +121,25 @@ public class SearchActivity extends BaseActivity {
     /**
      * 根据hash值获取详细数据
      *
-     * @param hash
+     * @param infoBean
      */
-    private void getInfo(String hash) {
+    private void getInfo(final KugouSearchListJson.DataBean.InfoBean infoBean) {
         ggHttpInfo = new GGHttp<>(URL.KUGOU_INFO, KugouInfoJson.class);
         ggHttpInfo.setMethodType("GET");
         ggHttpInfo.add("acceptMp3", "1");
-        ggHttpInfo.add("key", MyUtil.getMD5(hash + "kgcloud").toLowerCase());
+        ggHttpInfo.add("key", MyUtil.getMD5(infoBean.getHash() + "kgcloud").toLowerCase());
         ggHttpInfo.add("cmd", "3");
         ggHttpInfo.add("pid", "6");
-        ggHttpInfo.add("hash", hash);
+        ggHttpInfo.add("hash", infoBean.getHash());
         ggHttpInfo.send(new Action1<KugouInfoJson>() {
             @Override
             public void call(KugouInfoJson kugouInfoJson) {
+                MusicData musicData = new MusicData(MusicData.START, kugouInfoJson.getUrl());
+                musicData.setSinger(infoBean.getSingername());
+                musicData.setSongName(infoBean.getFilename());
+                musicData.setSongLogo("");
+                PlayMusicService.startService(context, musicData);
+                showToast("准备开始播放：" + infoBean.getSingername());
             }
         });
     }
@@ -121,11 +147,19 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     void setListener() {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        searchHintListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                getSearchList(adapter.getList().get(i).getKeyword());
+                getSearchList(searchHintAdapter.getList().get(i).getKeyword());
 
+
+            }
+        });
+
+        searchListListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                getInfo(searchListAdapter.getList().get(i));
             }
         });
 

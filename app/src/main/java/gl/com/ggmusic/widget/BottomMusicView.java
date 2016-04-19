@@ -2,15 +2,9 @@ package gl.com.ggmusic.widget;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.app.Application;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.PixelFormat;
-import android.os.Bundle;
-import android.os.IBinder;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,20 +29,17 @@ import gl.com.ggmusic.service.PlayMusicService;
  */
 public class BottomMusicView implements View.OnClickListener {
 
-    public static final String TAG_START_MUSIC = "tag_start_music";
-
     private Context context;
 
     private View bottomMusicView;
     private Application application;
 
     private android.widget.ImageView headImageView;
-    private TextView musicNameTextView;
+    private TextView songNameTextView;
     private TextView singerNameTextView;
     private android.widget.ImageView listImageView;
     private android.widget.ImageView playImageView;
     private android.widget.ImageView nextImageView;
-    private android.widget.LinearLayout playerLayout;
 
     /**
      * 表示音乐是否正在播放,只根据这个值判断就好
@@ -84,7 +75,10 @@ public class BottomMusicView implements View.OnClickListener {
             case R.id.listImageView:
                 break;
             case R.id.playImageView:
-                bindService();
+                MusicData musicData = new MusicData(Constants.SIMPLE_MUSIC);
+                //如果音乐正在播放，告诉Servie暂停，如果没播放，告诉Servie播放
+                musicData.setStatus(isPlaying ? MusicData.PAUSE : MusicData.START);
+                PlayMusicService.startService(context, musicData);
                 isPlaying = !isPlaying;
                 setImageResource();
                 break;
@@ -126,6 +120,21 @@ public class BottomMusicView implements View.OnClickListener {
     }
 
     /**
+     * 接收EventBus，MusicData
+     *
+     * @param musicData
+     */
+    @Subscribe
+    public void onEventMainThrad(MusicData musicData) {
+        if(musicData.getStatus() ==MusicData.START){
+            isPlaying = true;
+            setImageResource();
+            songNameTextView.setText(musicData.getSongName());
+            singerNameTextView.setText(musicData.getSinger());
+        }
+    }
+
+    /**
      * 将底部音乐控件从屏幕上移除
      */
     public void remove() {
@@ -133,39 +142,6 @@ public class BottomMusicView implements View.OnClickListener {
         windowManager.removeView(bottomMusicView);
         EventBus.getDefault().unregister(this);
     }
-
-    /**
-     * 开启并绑定播放音乐的Servie,同时向Servie发送一个请求，播放音乐
-     */
-    private void bindService() {
-        //如果音乐正在播放，告诉Servie暂停，如果没播放，告诉Servie播放
-        MusicData musicData = new MusicData(Constants.SIMPLE_MUSIC2);
-        musicData.setStatus(isPlaying ? MusicData.PAUSE : MusicData.START);
-
-
-        Intent service = new Intent(context.getApplicationContext(), PlayMusicService.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(TAG_START_MUSIC, musicData);
-        service.putExtras(bundle);
-        //同时start和bindService，不然后台音乐会自动退出
-        context.getApplicationContext().startService(service);
-        context.getApplicationContext().bindService
-                (service, connection, Activity.BIND_AUTO_CREATE);
-
-    }
-
-    ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-        }
-    };
-
 
     /**
      * 初始化，设置布局，findView等
@@ -179,7 +155,7 @@ public class BottomMusicView implements View.OnClickListener {
         this.playImageView = (ImageView) bottomMusicView.findViewById(R.id.playImageView);
         this.listImageView = (ImageView) bottomMusicView.findViewById(R.id.listImageView);
         this.singerNameTextView = (TextView) bottomMusicView.findViewById(R.id.singerNameTextView);
-        this.musicNameTextView = (TextView) bottomMusicView.findViewById(R.id.musicNameTextView);
+        this.songNameTextView = (TextView) bottomMusicView.findViewById(R.id.musicNameTextView);
         this.headImageView = (ImageView) bottomMusicView.findViewById(R.id.headImageView);
         //TYPE_TOAST 是关键,这样就不需要悬浮窗权限了
         WindowManager.LayoutParams params = new WindowManager.LayoutParams

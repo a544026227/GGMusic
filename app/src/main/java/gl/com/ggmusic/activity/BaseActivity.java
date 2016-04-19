@@ -65,7 +65,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     protected void initToolBar(String title) {
         toolbar.setTitle(title);
-        toolbar.setNavigationIcon(R.mipmap.ic_launcher);
+        toolbar.setNavigationIcon(R.mipmap.actionbar_back);
         toolbar.setNavigationOnClickListener(this);
     }
 

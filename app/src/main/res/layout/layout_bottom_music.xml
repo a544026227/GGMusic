@@ -9,7 +9,7 @@
         android:layout_width="@dimen/view_bottom_music"
         android:layout_height="@dimen/view_bottom_music"
         android:padding="10dp"
-        android:src="@mipmap/test"/>
+        android:src="@mipmap/about_logo"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -23,7 +23,7 @@
             android:id="@+id/musicNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="再也不见"
+            android:text="网易云音乐"
             android:textColor="@color/colorDefaultBlack"
             android:textSize="16sp"/>
 
@@ -32,7 +32,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="孙燕姿"
             android:textSize="13sp"/>
     </LinearLayout>
 

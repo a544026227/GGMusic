@@ -38,13 +38,21 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
      * @param musicData
      */
     public void play(MusicData musicData) {
-        if (musicData.getStatus() == MusicData.START) {
-            playUrlMusic(musicData.getUrl());
-        } else if (musicData.getStatus() == MusicData.PAUSE) {//停止播放音乐
-            if(mediaPlayer.isPlaying()){
-                pause();
-            }
+        switch (musicData.getStatus()) {
+            case MusicData.START:
+                playUrlMusic(musicData.getUrl());
+                break;
 
+            case MusicData.PAUSE://停止播放音乐
+                if (mediaPlayer.isPlaying()) {
+                    pause();
+                }
+                break;
+            case MusicData.INIT:
+                break;
+
+            default:
+                break;
         }
     }
 

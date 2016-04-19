@@ -10,13 +10,18 @@ import android.os.Parcelable;
 public class MusicData implements Parcelable {
 
     /**
+     * 暂停
+     */
+    public static final int PAUSE = 2;
+    /**
      * 开始
      */
     public static final int START = 1;
     /**
-     * 暂停
+     * 初始化
      */
-    public static final int PAUSE = 2;
+    public static final int INIT = 3;
+
 
     /**
      * 播放音乐的状态，START和PAUSE
@@ -25,14 +30,31 @@ public class MusicData implements Parcelable {
     /**
      * 播放网址url
      */
-    private String url ;
+    private String url;
     /**
      * 播放本地Url
      */
-    private String localUrl ;
+    private String localUrl;
+    /**
+     * 歌曲名称
+     */
+    private String  songName;
+    /**
+     * 演唱者
+     */
+    private String singer;
+    /**
+     * 歌曲小图片
+     */
+    private String songLogo;
 
-    public MusicData( int status,String url) {
+
+    public MusicData(int status, String url) {
         this.url = url;
+        this.status = status;
+    }
+
+    public MusicData(int status) {
         this.status = status;
     }
 
@@ -64,6 +86,29 @@ public class MusicData implements Parcelable {
         this.localUrl = localUrl;
     }
 
+    public String getSongName() {
+        return songName;
+    }
+
+    public void setSongName(String songName) {
+        this.songName = songName;
+    }
+
+    public String getSinger() {
+        return singer;
+    }
+
+    public void setSinger(String singer) {
+        this.singer = singer;
+    }
+
+    public String getSongLogo() {
+        return songLogo;
+    }
+
+    public void setSongLogo(String songLogo) {
+        this.songLogo = songLogo;
+    }
 
     @Override
     public int describeContents() {
@@ -75,12 +120,18 @@ public class MusicData implements Parcelable {
         dest.writeInt(this.status);
         dest.writeString(this.url);
         dest.writeString(this.localUrl);
+        dest.writeString(this.songName);
+        dest.writeString(this.singer);
+        dest.writeString(this.songLogo);
     }
 
     protected MusicData(Parcel in) {
         this.status = in.readInt();
         this.url = in.readString();
         this.localUrl = in.readString();
+        this.songName = in.readString();
+        this.singer = in.readString();
+        this.songLogo = in.readString();
     }
 
     public static final Parcelable.Creator<MusicData> CREATOR = new Parcelable.Creator<MusicData>() {

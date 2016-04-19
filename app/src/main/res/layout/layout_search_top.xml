@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/actionbar_height"
+                android:paddingLeft="20dp"
+                android:paddingRight="15dp">
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/searchEditText"
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="搜索音乐、歌曲"
+        app:met_baseColor="@color/colorWhite"
+        app:met_primaryColor="@color/colorWhite"
+        android:textCursorDrawable="@null"
+        android:textColor="#aaffffff"
+        android:textSize="20sp"/>
+
+    <ImageView
+        android:id="@+id/deleteImageView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:padding="10dp"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/actionbar_delete"/>
+
+</RelativeLayout>

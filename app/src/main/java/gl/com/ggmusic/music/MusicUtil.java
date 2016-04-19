@@ -14,14 +14,4 @@ import gl.com.ggmusic.service.PlayMusicService;
  */
 public class MusicUtil {
 
-    public static void startMusic(Context context ,MusicData musicData) {
-        Intent service = new Intent(context.getApplicationContext(), PlayMusicService.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(TAG_START_MUSIC, musicData);
-        service.putExtras(bundle);
-        //同时start和bindService，不然后台音乐会自动退出
-        context.getApplicationContext().startService(service);
-        context.getApplicationContext().bindService
-                (service, connection, Activity.BIND_AUTO_CREATE);
-    }
 }

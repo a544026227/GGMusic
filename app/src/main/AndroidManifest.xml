@@ -9,6 +9,7 @@
 
     <application
         android:allowBackup="true"
+        android:name=".GGApplication"
         android:icon="@mipmap/about_logo"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
@@ -24,7 +25,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.SearchActivity">
+            android:name=".activity.SearchActivity"
+            >
         </activity>
     </application>
 

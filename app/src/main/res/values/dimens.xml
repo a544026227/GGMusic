@@ -4,4 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="view_bottom_music">70dp</dimen>
     <dimen name="view_horizontal_side_height">40dp</dimen>
+    <dimen name="actionbar_height">60dp</dimen>
 </resources>
