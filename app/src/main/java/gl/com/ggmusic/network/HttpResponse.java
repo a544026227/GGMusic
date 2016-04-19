@@ -40,5 +40,14 @@ public class HttpResponse {
     public void setResponseContent(String responseContent) {
         this.responseContent = responseContent;
     }
+
+    @Override
+    public String toString() {
+        return "HttpResponse{" +
+                "responseCode=" + responseCode +
+                ", responseMessage='" + responseMessage + '\'' +
+                ", responseContent='" + responseContent + '\'' +
+                '}';
+    }
 }
     

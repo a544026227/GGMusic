@@ -127,7 +127,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 showViewPager(2);
                 break;
             case R.id.searchImageView:
-                startActivity(SettingActivity.class);
+                startActivity(SearchActivity.class);
                 break;
             default:
                 break;

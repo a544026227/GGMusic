@@ -3,6 +3,7 @@ package gl.com.ggmusic.network;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  * Created by guilinlin on 16/4/17 10:45.
@@ -25,5 +26,22 @@ public class Util {
             e.printStackTrace();
             return "InputSteamToString err:IOException";
         }
+    }
+
+    /**
+     * 将网络请求参数map转化成String
+     *
+     * @param map
+     */
+    public static String jointStringFromMap(Map<String, String> map) {
+        StringBuffer sb = new StringBuffer();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            sb.append(entry.getKey()).append('=').append(entry.getValue()).append('&');
+        }
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        return sb.toString();
+
     }
 }

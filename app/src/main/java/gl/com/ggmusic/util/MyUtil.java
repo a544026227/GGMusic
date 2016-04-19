@@ -3,6 +3,8 @@ package gl.com.ggmusic.util;
 import android.content.Context;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -39,7 +41,6 @@ public class MyUtil {
     }
 
 
-
     private static final char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
             'D', 'E', 'F'};
 
@@ -61,5 +62,19 @@ public class MyUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 将字符串转为utf-8编码
+     *
+     * @param str
+     */
+    public static String getURLEncoder(String str) {
+        try {
+            return URLEncoder.encode(str, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "getURLEncoder_error";
+        }
     }
 }
