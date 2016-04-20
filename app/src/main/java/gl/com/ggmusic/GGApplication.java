@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import gl.com.ggmusic.constants.Constants;
 import gl.com.ggmusic.music.MusicData;
 import gl.com.ggmusic.service.PlayMusicService;
+import gl.com.ggmusic.util.ScreenUtils;
 
 /**
  * Created by guilinlin on 16/4/19 17:57.
@@ -21,7 +23,10 @@ public class GGApplication extends Application {
         super.onCreate();
 
         bindService();
+
+        Constants.screenWidth = ScreenUtils.getScreenWidth(this);//初始化计算高度
     }
+
 
     /**
      * 开启并绑定播放音乐的Servie,同时向Servie发送一个请求，初始化服务
@@ -43,6 +48,7 @@ public class GGApplication extends Application {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
 
         }
+
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
 

@@ -52,7 +52,7 @@
         <ImageView
             android:id="@+id/playImageView"
             android:layout_width="55dp"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
         <ImageView
             android:id="@+id/nextImageView"
@@ -61,4 +61,11 @@
             android:src="@mipmap/playbar_btn_next"/>
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/processView"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"/>
 </RelativeLayout>

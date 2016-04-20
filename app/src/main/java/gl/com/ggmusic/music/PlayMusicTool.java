@@ -2,6 +2,7 @@ package gl.com.ggmusic.music;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Handler;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -17,13 +18,15 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
 
 
     private MediaPlayer mediaPlayer;
+    private Handler handler = new Handler();
+    private UpdateProcessTask updateProcessTask;
 
     public PlayMusicTool() {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnPreparedListener(this);//设置准备完成的监听
         mediaPlayer.setOnBufferingUpdateListener(this);//获取网络音乐的监听
-
+        updateProcessTask = new UpdateProcessTask(mediaPlayer, handler);
     }
 
     /**
@@ -39,6 +42,7 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
             case MusicData.START:
                 playUrlMusic(musicData.getUrl());
                 musicData.setPlaying(true);
+                updateProcessTask.run();
                 break;
 
             case MusicData.PAUSE://停止播放音乐
@@ -54,6 +58,7 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
                     mediaPlayer.start();
                     musicData.setPlaying(true);
                 }
+                updateProcessTask.run();
                 break;
             default:
                 break;
@@ -92,10 +97,13 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
     public void onPrepared(MediaPlayer mediaPlayer) {
         System.out.println("onPrepared");
         mediaPlayer.start();
+        MusicData.getInstance().setTotalSize(mediaPlayer.getDuration());
     }
 
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
-        System.out.println(i);
+        System.out.println("onBufferingUpdate:"+i);
     }
+
+
 }

@@ -12,10 +12,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="搜索音乐、歌曲"
+        app:met_textColorHint="#99ffffff"
         app:met_baseColor="@color/colorWhite"
         app:met_primaryColor="@color/colorWhite"
         android:textCursorDrawable="@null"
-        android:textColor="#aaffffff"
+        android:textColor="#ddffffff"
         android:textSize="20sp"/>
 
     <ImageView

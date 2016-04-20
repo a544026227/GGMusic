@@ -4,7 +4,7 @@ package gl.com.ggmusic.music;
  * Created by guilinlin on 16/4/18 23:17.
  * dese:该类是一个全局单例
  */
-public class MusicData  {
+public class MusicData {
 
     /**
      * 暂停
@@ -39,7 +39,7 @@ public class MusicData  {
     /**
      * 歌曲名称
      */
-    private String  songName ="网易云音乐";
+    private String songName = "网易云音乐";
     /**
      * 演唱者
      */
@@ -51,7 +51,15 @@ public class MusicData  {
     /**
      * 记录播放状态，true表示正在播放
      */
-    private boolean isPlaying ;
+    private boolean isPlaying;
+    /**
+     * 音乐播放的百分比
+     */
+    private float percent;
+    /**
+     * 音乐的尺寸
+     */
+    private int totalSize;
 
     private static MusicData musicData;
 
@@ -125,7 +133,23 @@ public class MusicData  {
         return isPlaying;
     }
 
+    public float getPercent() {
+        return percent;
+    }
+
+    public void setPercent(float percent) {
+        this.percent = percent;
+    }
+
     public void setPlaying(boolean playing) {
         isPlaying = playing;
+    }
+
+    public int getTotalSize() {
+        return totalSize;
+    }
+
+    public void setTotalSize(int totalSize) {
+        this.totalSize = totalSize;
     }
 }

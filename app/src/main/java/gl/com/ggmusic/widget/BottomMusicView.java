@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import gl.com.ggmusic.R;
+import gl.com.ggmusic.constants.Constants;
 import gl.com.ggmusic.music.MusicData;
 import gl.com.ggmusic.service.PlayMusicService;
 
@@ -27,6 +28,7 @@ public class BottomMusicView extends RelativeLayout implements View.OnClickListe
     private android.widget.ImageView listImageView;
     private android.widget.ImageView playImageView;
     private android.widget.ImageView nextImageView;
+    private View processView;
 
     /**
      * 表示音乐是否正在播放,只根据这个值判断就好
@@ -54,6 +56,8 @@ public class BottomMusicView extends RelativeLayout implements View.OnClickListe
         this.singerNameTextView = (TextView) findViewById(R.id.singerNameTextView);
         this.songNameTextView = (TextView) findViewById(R.id.musicNameTextView);
         this.headImageView = (ImageView) findViewById(R.id.headImageView);
+        this.processView = findViewById(R.id.processView);
+
     }
 
     private void setListener() {
@@ -95,6 +99,7 @@ public class BottomMusicView extends RelativeLayout implements View.OnClickListe
         setImageResource();
         songNameTextView.setText(musicData.getSongName());
         singerNameTextView.setText(musicData.getSinger());
+        updateProcess(musicData.getPercent());
     }
 
 
@@ -104,6 +109,13 @@ public class BottomMusicView extends RelativeLayout implements View.OnClickListe
     private void setImageResource() {
         playImageView.setImageResource(isPlaying ?
                 R.mipmap.playbar_btn_pause : R.mipmap.playbar_btn_play);
+    }
+
+    public void updateProcess(float percent) {
+        LayoutParams lp = (LayoutParams) processView.getLayoutParams();
+        lp.width = (int) (Constants.screenWidth * percent);
+        processView.requestLayout();
+
     }
 
 }
