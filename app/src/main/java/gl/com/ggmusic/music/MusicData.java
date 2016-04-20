@@ -22,6 +22,10 @@ public class MusicData {
      * 播放之前的音乐
      */
     public static final int RESTART = 4;
+    /**
+     * 播放结束
+     */
+    public static final int END = 5;
 
 
     /**

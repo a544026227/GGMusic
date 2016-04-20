@@ -84,6 +84,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     void initView() {
+        bottomMusicView.update();
 
         initViewPager();
 

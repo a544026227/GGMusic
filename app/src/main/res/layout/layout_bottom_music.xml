@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/view_bottom_music"
-                android:background="#99FFFFFF">
+                android:background="#ddFFFFFF">
 
     <ImageView
         android:id="@+id/headImageView"
@@ -24,15 +24,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="网易云音乐"
+            android:singleLine="true"
             android:textColor="@color/colorDefaultBlack"
-            android:textSize="16sp"/>
+            android:textSize="17sp"/>
 
         <TextView
             android:id="@+id/singerNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:textSize="13sp"/>
+            android:textSize="14sp"/>
     </LinearLayout>
 
     <LinearLayout

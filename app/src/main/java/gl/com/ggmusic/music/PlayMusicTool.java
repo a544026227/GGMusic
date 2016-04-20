@@ -26,6 +26,7 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnPreparedListener(this);//设置准备完成的监听
         mediaPlayer.setOnBufferingUpdateListener(this);//获取网络音乐的监听
+        mediaPlayer.setOnCompletionListener(this);
         updateProcessTask = new UpdateProcessTask(mediaPlayer, handler);
     }
 
@@ -89,7 +90,8 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-
+        MusicData.getInstance().setPlaying(false);
+        EventBus.getDefault().post(MusicData.getInstance());
     }
 
 
