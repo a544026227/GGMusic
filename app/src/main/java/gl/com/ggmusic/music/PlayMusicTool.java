@@ -3,9 +3,9 @@ package gl.com.ggmusic.music;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
-import java.io.IOException;
+import org.greenrobot.eventbus.EventBus;
 
-import gl.com.ggmusic.bean.MusicData;
+import java.io.IOException;
 
 /**
  * Created by guilinlin on 16/4/16 19:07.
@@ -18,11 +18,6 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
 
     private MediaPlayer mediaPlayer;
 
-    /**
-     * 这个值记录音乐是否已经播放了但是被暂停播放
-     */
-    private boolean isPaused = false;
-
     public PlayMusicTool() {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -32,28 +27,38 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
     }
 
     /**
-     * 暴露一个播放音乐的方法，需要传入一个MusicData对象，
-     * 由于告知播放什么音乐，以及进行什么操作
+     * 暴露一个播放音乐的方法，需要传入一个MusicData对象
+     * 同时更新所有界面的底部
      *
      * @param musicData
      */
     public void play(MusicData musicData) {
-        switch (musicData.getStatus()) {
+
+
+        switch (musicData.getFlag()) {
             case MusicData.START:
                 playUrlMusic(musicData.getUrl());
+                musicData.setPlaying(true);
                 break;
 
             case MusicData.PAUSE://停止播放音乐
                 if (mediaPlayer.isPlaying()) {
-                    pause();
+                    mediaPlayer.pause();
+                    musicData.setPlaying(false);
                 }
                 break;
             case MusicData.INIT:
                 break;
-
+            case MusicData.RESTART:
+                if (!mediaPlayer.isPlaying()) {
+                    mediaPlayer.start();
+                    musicData.setPlaying(true);
+                }
+                break;
             default:
                 break;
         }
+        EventBus.getDefault().post(MusicData.getInstance());//一旦播放音乐什么的通知所有界面改变
     }
 
     /**
@@ -62,28 +67,19 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
      * @param url
      *         音乐网址，后缀必须为MP3
      */
-    public void playUrlMusic(final String url) {
-        if (isPaused) {//如果已暂停，重新播放
-            mediaPlayer.start();
-        } else {//否则准备并开始播放
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        mediaPlayer.reset();
-                        mediaPlayer.setDataSource(url);
-                        mediaPlayer.prepare();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+    private void playUrlMusic(final String url) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(url);
+                    mediaPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }).start();
-        }
-    }
-
-    public void pause() {
-        isPaused = true;//标记已暂停
-        mediaPlayer.pause();
+            }
+        }).start();
     }
 
     @Override

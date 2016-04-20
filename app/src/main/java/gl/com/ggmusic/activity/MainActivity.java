@@ -1,13 +1,11 @@
 package gl.com.ggmusic.activity;
 
 
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +15,6 @@ import gl.com.ggmusic.activity.main.MainDiscoverView;
 import gl.com.ggmusic.activity.main.MainFriendsView;
 import gl.com.ggmusic.activity.main.MainMusicView;
 import gl.com.ggmusic.adapter.CommonUseViewPagerAdapter;
-import gl.com.ggmusic.bean.BottomMusicEvent;
 import gl.com.ggmusic.widget.BottomMusicView;
 
 
@@ -56,16 +53,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     /**
      * 侧滑菜单
      */
-    private View menuLayout;
+//    private View menuLayout;
     /**
      * 官方提供的侧滑菜单
      */
     private DrawerLayout drawerLayout;
-    /**
-     * 底部音乐图标
-     */
-    private BottomMusicView bottomMusicView;
-
 
     public MainActivity() {
         setContentView(R.layout.activity_main);
@@ -73,32 +65,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     void init() {
+        //移除baseActivity的view,使用自定义的
+        outmosterRelativeLayout.removeAllViews();
+        setContentViewReal(R.layout.activity_main);
+
+
         this.drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        this.menuLayout = findViewById(R.id.menuLayout);
+//        this.menuLayout = findViewById(R.id.menuLayout);
         this.contentViewPager = (ViewPager) findViewById(R.id.contentViewPager);
         this.searchImageView = (ImageView) findViewById(R.id.searchImageView);
         this.friendsImageView = (ImageView) findViewById(R.id.friendsImageView);
         this.musicImageView = (ImageView) findViewById(R.id.musicImageView);
         this.discoverImageView = (ImageView) findViewById(R.id.discoverImageView);
         this.menuImageView = (ImageView) findViewById(R.id.menuImageView);
-
-        bottomMusicView = new BottomMusicView();
+        super.bottomMusicView = (BottomMusicView) findViewById(R.id.bottomMusicView);
 
     }
-
 
     @Override
     void initView() {
 
-        toolbar.setVisibility(View.GONE);
-
-        bottomMusicView.show(getApplication(), context);
-
         initViewPager();
 
-
     }
-
 
     @Override
     void setListener() {
@@ -115,7 +104,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         switch (view.getId()) {
 
             case R.id.menuImageView:
-                drawerLayout.openDrawer(Gravity.LEFT);
+                drawerLayout.openDrawer(GravityCompat.START);
                 break;
             case R.id.discoverImageView:
                 showViewPager(0);
@@ -181,8 +170,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //程序结束时移除
-        bottomMusicView.remove();
     }
 
     @Override
@@ -190,14 +177,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
+    /**
+     * 侧滑菜单被打开
+     *
+     * @param drawerView
+     */
     @Override
     public void onDrawerOpened(View drawerView) {
-        EventBus.getDefault().post(new BottomMusicEvent(BottomMusicEvent.GONE));
     }
 
+    /**
+     * 监听侧滑菜单关闭
+     *
+     * @param drawerView
+     */
     @Override
     public void onDrawerClosed(View drawerView) {
-        EventBus.getDefault().post(new BottomMusicEvent(BottomMusicEvent.VISABLE));
     }
 
     @Override

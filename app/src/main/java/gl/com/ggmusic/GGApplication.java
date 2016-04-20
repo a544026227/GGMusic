@@ -5,10 +5,9 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.os.IBinder;
 
-import gl.com.ggmusic.bean.MusicData;
+import gl.com.ggmusic.music.MusicData;
 import gl.com.ggmusic.service.PlayMusicService;
 
 /**
@@ -25,16 +24,14 @@ public class GGApplication extends Application {
     }
 
     /**
-     * 开启并绑定播放音乐的Servie,同时向Servie发送一个请求，播放音乐
+     * 开启并绑定播放音乐的Servie,同时向Servie发送一个请求，初始化服务
      */
     private void bindService() {
         //如果音乐正在播放，告诉Servie暂停，如果没播放，告诉Servie播放
-        MusicData musicData = new MusicData(MusicData.INIT);
+        MusicData musicData = MusicData.getInstance();
+        musicData.setFlag(MusicData.INIT);
 
         Intent service = new Intent(this, PlayMusicService.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(PlayMusicService.TAG_START_MUSIC, musicData);
-        service.putExtras(bundle);
         //同时start和bindService，不然后台音乐会自动退出
         startService(service);
         bindService(service, connection, Activity.BIND_AUTO_CREATE);

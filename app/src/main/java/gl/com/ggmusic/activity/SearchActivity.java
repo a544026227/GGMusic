@@ -17,8 +17,8 @@ import gl.com.ggmusic.adapter.SearchListAdapter;
 import gl.com.ggmusic.bean.KugouInfoJson;
 import gl.com.ggmusic.bean.KugouSearchHintJson;
 import gl.com.ggmusic.bean.KugouSearchListJson;
-import gl.com.ggmusic.bean.MusicData;
 import gl.com.ggmusic.constants.URL;
+import gl.com.ggmusic.music.MusicData;
 import gl.com.ggmusic.network.GGHttp;
 import gl.com.ggmusic.service.PlayMusicService;
 import gl.com.ggmusic.util.MyUtil;
@@ -42,6 +42,7 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     void init() {
+
         initToolBar("");
         View view = LayoutInflater.from(context).inflate(R.layout.layout_search_top, toolbar);
 
@@ -134,11 +135,13 @@ public class SearchActivity extends BaseActivity {
         ggHttpInfo.send(new Action1<KugouInfoJson>() {
             @Override
             public void call(KugouInfoJson kugouInfoJson) {
-                MusicData musicData = new MusicData(MusicData.START, kugouInfoJson.getUrl());
+                MusicData musicData = MusicData.getInstance();
+                musicData.setFlag(MusicData.START);
+                musicData.setUrl(kugouInfoJson.getUrl());
                 musicData.setSinger(infoBean.getSingername());
                 musicData.setSongName(infoBean.getFilename());
                 musicData.setSongLogo("");
-                PlayMusicService.startService(context, musicData);
+                PlayMusicService.startService(context);
                 showToast("准备开始播放：" + infoBean.getSingername());
             }
         });

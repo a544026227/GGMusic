@@ -8,9 +8,6 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/**
- * Created by guilinlin on 16/4/14.
- */
 public class MyUtil {
 
     public static void print(Object... objectses) {
@@ -52,8 +49,7 @@ public class MyUtil {
             byte[] mdByte = MD.digest();
             char[] str = new char[mdByte.length * 2];
             int k = 0;
-            for (int i = 0; i < mdByte.length; i++) {
-                byte temp = mdByte[i];
+            for (byte temp : mdByte) {
                 str[k++] = hexDigits[temp >>> 4 & 0xf];
                 str[k++] = hexDigits[temp & 0xf];
             }
