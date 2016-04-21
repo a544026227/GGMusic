@@ -1,4 +1,4 @@
-package gl.com.ggmusic.service;
+package gl.com.ggmusic.music;
 
 import android.app.Service;
 import android.content.Context;
@@ -7,9 +7,10 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import gl.com.ggmusic.music.MusicData;
-import gl.com.ggmusic.music.PlayMusicTool;
-
+/**
+ * 该类是包安全的，只限制当前包可以访问
+ * 任何操作音乐播放的操作都要通过service执行,即与service通信
+ */
 public class PlayMusicService extends Service {
 
     private MusicBinder musicBinder;
@@ -55,7 +56,7 @@ public class PlayMusicService extends Service {
     /**
      * 开启并绑定播放音乐的Servie,同时向Servie发送一个请求，播放音乐
      */
-    public static void startService(Context context ) {
+    public static void startService(Context context) {
         Intent service = new Intent(context.getApplicationContext(), PlayMusicService.class);
         context.getApplicationContext().startService(service);
     }

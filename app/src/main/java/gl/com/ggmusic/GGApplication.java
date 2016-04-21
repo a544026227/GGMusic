@@ -9,7 +9,7 @@ import android.os.IBinder;
 
 import gl.com.ggmusic.constants.Constants;
 import gl.com.ggmusic.music.MusicData;
-import gl.com.ggmusic.service.PlayMusicService;
+import gl.com.ggmusic.music.PlayMusicService;
 import gl.com.ggmusic.util.ScreenUtils;
 
 /**
@@ -25,6 +25,8 @@ public class GGApplication extends Application {
         bindService();
 
         Constants.screenWidth = ScreenUtils.getScreenWidth(this);//初始化计算高度
+        Constants.statusHeight = ScreenUtils.getStatusHeight(this);//初始化状态栏高度
+        Constants.navigationBarheight = ScreenUtils.getNavigationBarHeight(this);//初始化navigation高度
     }
 
 

@@ -7,7 +7,19 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@style/FeelyouWindowAnimTheme</item>
         <item name="windowActionBar">false</item>
+    </style>
+
+    <style name="FullScreenTheme" parent="AppTheme">
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="FeelyouWindowAnimTheme" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@null</item>
+        <item name="android:activityOpenExitAnimation">@null</item>
+        <item name="android:activityCloseEnterAnimation">@null</item>
+        <item name="android:activityCloseExitAnimation">@null</item>
     </style>
 
     <style name="main_actionbar_image">
@@ -17,6 +29,7 @@
         <item name="android:background">@drawable/default_image_pressed</item>
     </style>
 
+
     <style name="main_actionbar_image_center">
         <item name="android:layout_height">60dp</item>
         <item name="android:layout_width">60dp</item>
@@ -25,5 +38,10 @@
         <item name="android:layout_marginLeft">5dp</item>
         <item name="android:layout_marginRight">5dp</item>
     </style>
-
+    <style name="music_info_image_center">
+        <item name="android:layout_height">70dp</item>
+        <item name="android:layout_width">70dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/default_image_pressed</item>
+    </style>
 </resources>

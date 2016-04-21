@@ -5,4 +5,6 @@
     <dimen name="view_bottom_music">70dp</dimen>
     <dimen name="view_horizontal_side_height">40dp</dimen>
     <dimen name="actionbar_height">60dp</dimen>
+    <dimen name="default_left_margin">13dp</dimen>
+    <dimen name="default_right_margin">13dp</dimen>
 </resources>

@@ -22,7 +22,7 @@ import gl.com.ggmusic.widget.BottomMusicView;
  * 注意事项:
  * 1.构造方法中需调用setContentView(),否则抛异常
  */
-public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener {
+public abstract class BaseActivity extends AppCompatActivity   {
 
 
     /**
@@ -53,6 +53,8 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        superInit();
+
         //调用父类的setContentView，否则会调用重写的setContentView
         super.setContentView(R.layout.activity_base);
 
@@ -62,7 +64,9 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         this.toolbar = (Toolbar) findViewById(R.id.toolbar);
         this.bottomMusicView = (BottomMusicView) findViewById(R.id.bottomMusicView);
 
-        bottomMusicView.update();
+        if (bottomMusicView != null) {
+            bottomMusicView.update();
+        }
 
         EventBus.getDefault().register(this);//每一个界面都注册更新底部音乐空间的EventBus
 
@@ -95,7 +99,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void initToolBar(String title) {
         toolbar.setTitle(title);
         toolbar.setNavigationIcon(R.mipmap.actionbar_back);
-        toolbar.setNavigationOnClickListener(this);
+        toolbar.setNavigationOnClickListener(navigationOnClickListener);
     }
 
     /**
@@ -115,6 +119,13 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      */
     public void setContentViewReal(int layoutID) {
         super.setContentView(layoutID);
+    }
+
+    /**
+     * 最先的初始化方法,子类可以选择重写
+     */
+    protected void superInit(){
+
     }
 
     abstract void init();
@@ -152,10 +163,12 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         startActivity(activityClass, null);
     }
 
-    @Override
-    public void onClick(View view) {
-        finish();
-    }
+    private View.OnClickListener navigationOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            finish();
+        }
+    };
 
     protected void showToast(Object msg) {
         MyUtil.t(context, msg);

@@ -5,9 +5,11 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -20,8 +22,10 @@ import gl.com.ggmusic.bean.KugouSearchListJson;
 import gl.com.ggmusic.constants.URL;
 import gl.com.ggmusic.music.MusicData;
 import gl.com.ggmusic.network.GGHttp;
-import gl.com.ggmusic.service.PlayMusicService;
+import gl.com.ggmusic.music.PlayMusicService;
+import gl.com.ggmusic.util.DensityUtils;
 import gl.com.ggmusic.util.MyUtil;
+import gl.com.ggmusic.widget.FlowLayout;
 import rx.functions.Action1;
 
 public class SearchActivity extends BaseActivity {
@@ -34,6 +38,7 @@ public class SearchActivity extends BaseActivity {
 
     private ListView searchHintListView;
     private ListView searchListListView;
+    private gl.com.ggmusic.widget.FlowLayout hotSearchFlowLayout;
 
 
     public SearchActivity() {
@@ -46,6 +51,7 @@ public class SearchActivity extends BaseActivity {
         initToolBar("");
         View view = LayoutInflater.from(context).inflate(R.layout.layout_search_top, toolbar);
 
+        this.hotSearchFlowLayout = (FlowLayout) findViewById(R.id.hotSearchFlowLayout);
         this.searchListListView = (ListView) findViewById(R.id.resultListView);
         this.searchHintListView = (ListView) findViewById(R.id.hintListView);
         this.searchEditText = (MaterialEditText) view.findViewById(R.id.searchEditText);
@@ -61,6 +67,44 @@ public class SearchActivity extends BaseActivity {
         searchHintListView.setAdapter(searchHintAdapter);
         searchListListView.setAdapter(searchListAdapter);
 
+        addTextViewToFlowLayout("许嵩");
+        addTextViewToFlowLayout("我是歌手");
+        addTextViewToFlowLayout("寂寞沙洲冷");
+        addTextViewToFlowLayout("暖春");
+        addTextViewToFlowLayout("米店");
+        addTextViewToFlowLayout("Adele");
+        addTextViewToFlowLayout("不为谁而作的歌");
+        addTextViewToFlowLayout("You Are My EveryThing");
+        addTextViewToFlowLayout("Adele");
+        addTextViewToFlowLayout("有心人");
+
+
+    }
+
+    /**
+     * 增加文字到流式布局中，这段代码可以优化
+     *
+     * @param name
+     */
+    private void addTextViewToFlowLayout(final String name) {
+        TextView tv = new TextView(context);
+        ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams
+                .WRAP_CONTENT);
+        int pad = DensityUtils.dp2px(context, 7);
+        tv.setPadding(pad, pad, pad, pad);
+        tv.setTextSize(19);
+        tv.setTextColor(getResources().getColor(R.color.colorDefaultBlack));
+        tv.setText(name);
+        lp.bottomMargin = DensityUtils.dp2px(context, 13);
+        lp.rightMargin = DensityUtils.dp2px(context, 13);
+        tv.setBackgroundResource(R.drawable.bg_grey_stoke_1px_corrner_2dp);
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSearchList(name);
+            }
+        });
+        hotSearchFlowLayout.addView(tv, lp);
     }
 
     private GGHttp<KugouSearchListJson> ggHttpSearchList;
@@ -86,6 +130,7 @@ public class SearchActivity extends BaseActivity {
         ggHttpSearchList.send(new Action1<KugouSearchListJson>() {
             @Override
             public void call(KugouSearchListJson kugouSearchListJson) {
+                hotSearchFlowLayout.setVisibility(View.GONE);
                 searchHintAdapter.getList().clear();
                 searchHintAdapter.notifyDataSetChanged();
                 searchListAdapter.getList().clear();

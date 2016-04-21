@@ -2,9 +2,11 @@ package gl.com.ggmusic.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -140,6 +142,14 @@ public class ScreenUtils {
 		view.destroyDrawingCache();
 		return bp;
 
+	}
+
+	public static int getNavigationBarHeight(Context context) {
+		Resources resources = context.getResources();
+		int resourceId = resources.getIdentifier("navigation_bar_height","dimen", "android");
+		int height = resources.getDimensionPixelSize(resourceId);
+		Log.v("dbw", "Navi height:" + height);
+		return height;
 	}
 
 }

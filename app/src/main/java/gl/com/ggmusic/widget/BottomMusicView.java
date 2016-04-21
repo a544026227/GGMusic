@@ -1,6 +1,7 @@
 package gl.com.ggmusic.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -10,9 +11,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import gl.com.ggmusic.R;
+import gl.com.ggmusic.activity.MusicInfoActivity;
 import gl.com.ggmusic.constants.Constants;
 import gl.com.ggmusic.music.MusicData;
-import gl.com.ggmusic.service.PlayMusicService;
+import gl.com.ggmusic.music.PlayMusicService;
 
 /**
  * 底部音乐播放的控件，一个很核心的类
@@ -29,6 +31,7 @@ public class BottomMusicView extends RelativeLayout implements View.OnClickListe
     private android.widget.ImageView playImageView;
     private android.widget.ImageView nextImageView;
     private View processView;
+    private RelativeLayout parentRelativeLayout;
 
     /**
      * 表示音乐是否正在播放,只根据这个值判断就好
@@ -57,6 +60,7 @@ public class BottomMusicView extends RelativeLayout implements View.OnClickListe
         this.songNameTextView = (TextView) findViewById(R.id.musicNameTextView);
         this.headImageView = (ImageView) findViewById(R.id.headImageView);
         this.processView = findViewById(R.id.processView);
+        this.parentRelativeLayout = (RelativeLayout) findViewById(R.id.parentRelativeLayout);
 
     }
 
@@ -64,6 +68,7 @@ public class BottomMusicView extends RelativeLayout implements View.OnClickListe
         listImageView.setOnClickListener(this);
         playImageView.setOnClickListener(this);
         nextImageView.setOnClickListener(this);
+        parentRelativeLayout.setOnClickListener(this);
     }
 
     @Override
@@ -84,7 +89,9 @@ public class BottomMusicView extends RelativeLayout implements View.OnClickListe
                 break;
             case R.id.nextImageView:
                 break;
-
+            case R.id.parentRelativeLayout:
+                context.startActivity(new Intent(context, MusicInfoActivity.class));
+                break;
             default:
                 break;
         }

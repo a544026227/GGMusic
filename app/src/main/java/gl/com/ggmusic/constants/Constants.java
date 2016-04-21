@@ -10,6 +10,8 @@ public class Constants {
     private static Constants constants;
 
     public static int screenWidth = 0;
+    public static int statusHeight = 0;
+    public static int navigationBarheight = 0;
 
     public static final String TEST_GET_URL = "http://app-api-test.51youdian.com:8081/saledianMerchant/storeManager/updateCashierRealName";
 

@@ -62,6 +62,7 @@ public class GGHttp<T extends Object> {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread());
+
     }
 
     public void send(Action1<T> action1) {

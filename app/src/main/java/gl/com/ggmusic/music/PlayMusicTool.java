@@ -13,7 +13,7 @@ import java.io.IOException;
  * email 973635949@qq.com<br/>
  * desc：
  */
-public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer
+class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer
         .OnBufferingUpdateListener {
 
 
@@ -31,12 +31,12 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
     }
 
     /**
-     * 暴露一个播放音乐的方法，需要传入一个MusicData对象
+     * 暴露一个播放音乐的方法，只有当前包可以访问,需要传入一个MusicData对象
      * 同时更新所有界面的底部
      *
      * @param musicData
      */
-    public void play(MusicData musicData) {
+     void play(MusicData musicData) {
 
 
         switch (musicData.getFlag()) {
@@ -93,7 +93,6 @@ public class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPla
         MusicData.getInstance().setPlaying(false);
         EventBus.getDefault().post(MusicData.getInstance());
     }
-
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {

@@ -92,6 +92,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     void setListener() {
+
         this.searchImageView.setOnClickListener(this);
         this.friendsImageView.setOnClickListener(this);
         this.musicImageView.setOnClickListener(this);

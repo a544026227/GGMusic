@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.SearchActivity">
+
+    <View
+        android:id="@+id/centerView"
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:background="#FFFFFF"
+        android:layout_centerHorizontal="true"/>
+
+
+    <ImageView
+        android:id="@+id/diskImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="150dp"
+        android:src="@drawable/app_widget_default_4x4"/>
+
+    <ImageView
+        android:id="@+id/needleImageView"
+        android:layout_width="120dp"
+        android:layout_height="180dp"
+        android:layout_marginLeft="-20dp"
+        android:layout_marginTop="-20dp"
+        android:layout_toRightOf="@+id/centerView"
+        android:src="@mipmap/play_needle"/>
+
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:id="@+id/titleRelativeLayut"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_height="70dp" >
+
+        <ImageView
+            android:layout_centerVertical="true"
+            android:id="@+id/circulationImageView"
+            style="@style/main_actionbar_image"
+            android:src="@mipmap/actionbar_menu"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_centerInParent="true">
+
+
+            <ImageView
+                android:id="@+id/prevImageView"
+                style="@style/music_info_image_center"
+                android:src="@mipmap/play_btn_prev_prs"/>
+
+            <ImageView
+                android:id="@+id/startImageView"
+                style="@style/music_info_image_center"
+                android:src="@mipmap/play_fm_btn_play_prs"/>
+
+            <ImageView
+                android:id="@+id/nextImageView"
+                style="@style/music_info_image_center"
+                android:src="@mipmap/play_btn_next_prs"/>
+        </LinearLayout>
+
+        <ImageView
+            android:layout_centerVertical="true"
+            android:id="@+id/menuImageView"
+            style="@style/main_actionbar_image"
+            android:layout_alignParentRight="true"
+            android:src="@mipmap/actionbar_menu"/>
+    </RelativeLayout>
+
+
+</RelativeLayout>
