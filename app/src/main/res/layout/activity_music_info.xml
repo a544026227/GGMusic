@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,17 +11,29 @@
         android:id="@+id/centerView"
         android:layout_width="0px"
         android:layout_height="0px"
-        android:background="#FFFFFF"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:background="#FFFFFF"/>
 
 
-    <ImageView
-        android:id="@+id/diskImageView"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="150dp"
-        android:src="@drawable/app_widget_default_4x4"/>
+        android:layout_marginBottom="150dp">
+
+        <ImageView
+            android:id="@+id/diskImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/app_widget_default_4x4"/>
+
+        <gl.com.ggmusic.widget.CircleImageView
+            android:id="@+id/songLogoImageView"
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:layout_gravity="center"
+            android:src="@mipmap/about_logo"/>
+    </FrameLayout>
+
 
     <ImageView
         android:id="@+id/needleImageView"
@@ -32,16 +45,16 @@
         android:src="@mipmap/play_needle"/>
 
     <RelativeLayout
-        android:layout_alignParentBottom="true"
         android:id="@+id/titleRelativeLayut"
         android:layout_width="match_parent"
-        android:layout_marginBottom="10dp"
-        android:layout_height="70dp" >
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp">
 
         <ImageView
-            android:layout_centerVertical="true"
             android:id="@+id/circulationImageView"
             style="@style/main_actionbar_image"
+            android:layout_centerVertical="true"
             android:src="@mipmap/actionbar_menu"/>
 
         <LinearLayout
@@ -67,10 +80,10 @@
         </LinearLayout>
 
         <ImageView
-            android:layout_centerVertical="true"
             android:id="@+id/menuImageView"
             style="@style/main_actionbar_image"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:src="@mipmap/actionbar_menu"/>
     </RelativeLayout>
 

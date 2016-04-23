@@ -24,6 +24,15 @@ public class GGApplication extends Application {
 
         bindService();
 
+        measureScreen();
+
+
+    }
+
+    /**
+     * 计算一些屏幕尺寸
+     */
+    private void measureScreen() {
         Constants.screenWidth = ScreenUtils.getScreenWidth(this);//初始化计算高度
         Constants.statusHeight = ScreenUtils.getStatusHeight(this);//初始化状态栏高度
         Constants.navigationBarheight = ScreenUtils.getNavigationBarHeight(this);//初始化navigation高度

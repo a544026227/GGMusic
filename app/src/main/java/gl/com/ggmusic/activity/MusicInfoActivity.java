@@ -15,8 +15,14 @@ import gl.com.ggmusic.R;
 import gl.com.ggmusic.constants.Constants;
 import gl.com.ggmusic.music.MusicData;
 import gl.com.ggmusic.music.PlayMusicService;
+import gl.com.ggmusic.widget.CircleImageView;
 
 public class MusicInfoActivity extends BaseActivity implements View.OnClickListener {
+
+    /**
+     * 临时存储歌词文件的名称
+     */
+    public String TEMPORARY_FILE_NAME = "temporary.krc";
 
     private MusicData musicData;
     private android.widget.ImageView needleImageView;
@@ -25,6 +31,7 @@ public class MusicInfoActivity extends BaseActivity implements View.OnClickListe
     private Animation upAnimation_0ms;
     private Animation downAnimation;
     private Animation circulationAnimation;//循环转动的动画
+    private Animation circulationAnimation2;//循环转动的动画
     private ImageView diskImageView;
     private ImageView circulationImageView;
     private ImageView prevImageView;
@@ -32,6 +39,10 @@ public class MusicInfoActivity extends BaseActivity implements View.OnClickListe
     private ImageView nextImageView;
     private ImageView menuImageView;
     private android.widget.RelativeLayout titleRelativeLayut;
+    private View centerView;
+    private gl.com.ggmusic.widget.CircleImageView songLogoImageView;
+
+    private int currentRotation = 0;
 
 
     public MusicInfoActivity() {
@@ -49,6 +60,7 @@ public class MusicInfoActivity extends BaseActivity implements View.OnClickListe
         this.prevImageView = (ImageView) findViewById(R.id.prevImageView);
         this.circulationImageView = (ImageView) findViewById(R.id.circulationImageView);
         this.diskImageView = (ImageView) findViewById(R.id.diskImageView);
+        this.songLogoImageView = (CircleImageView) findViewById(R.id.songLogoImageView);
 
         initAnimation();
     }
@@ -71,15 +83,48 @@ public class MusicInfoActivity extends BaseActivity implements View.OnClickListe
         outmosterRelativeLayout.setPadding
                 (0, Constants.statusHeight, 0, Constants.navigationBarheight);//设置上边距，显示状态栏
 
+        songLogoImageView.startAnimation(circulationAnimation2);
         diskImageView.startAnimation(circulationAnimation);
 
         if (!musicData.isPlaying()) {//如果音乐是暂停状态
             diskImageView.clearAnimation();
+            songLogoImageView.clearAnimation();
             needleImageView.startAnimation(upAnimation_0ms);//抬起播放杆
             startImageView.setImageResource(R.mipmap.play_fm_btn_play_prs);
         } else {
             startImageView.setImageResource(R.mipmap.play_fm_btn_pause_prs);
         }
+
+
+//        rx.Observable
+//                .just(1)
+//                .observeOn(Schedulers.io())
+//                .map(new Func1<Integer, HttpResponse>() {
+//
+//                    @Override
+//                    public HttpResponse call(Integer integer) {
+//                        GGHttp ggHttp = new GGHttp(URL.KUGOU_KRC, String.class);
+//                        ggHttp.setMethodType("GET");
+//                        ggHttp.add("keyword", musicData.getSongNameEncoder());
+//                        ggHttp.add("timelength", musicData.getDurtion() + "000");
+//                        ggHttp.add("type", "1");
+//                        ggHttp.add("cmd", "200");
+//                        ggHttp.add("hash", musicData.getHash());
+//                        return ggHttp.getHttpResponse();
+//                    }
+//
+//                })
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Action1<HttpResponse>() {
+//                    @Override
+//                    public void call(HttpResponse response) {
+//                        System.out.println(response.getResponseCode());
+//                        InputStream is = response.getInputStream();
+//                        System.out.println(FileUtils.writeFile(Constants.DOWNLOAD_PATH+TEMPORARY_FILE_NAME,is));
+//
+//                    }
+//                });
+
 
     }
 
@@ -92,20 +137,24 @@ public class MusicInfoActivity extends BaseActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.startImageView:
-                if (!TextUtils.isEmpty(musicData.getUrl())) {
-                    if (musicData.isPlaying()) {//点击的时候正在播放
-                        diskImageView.clearAnimation();
-                        startImageView.setImageResource(R.mipmap.play_fm_btn_play_prs);
-                        musicData.setFlag(MusicData.PAUSE);
-                        needleImageView.startAnimation(upAnimation);
-                    } else {
-                        diskImageView.startAnimation(circulationAnimation);
-                        startImageView.setImageResource(R.mipmap.play_fm_btn_pause_prs);
-                        musicData.setFlag(MusicData.RESTART);
-                        needleImageView.startAnimation(downAnimation);
-                    }
-                    PlayMusicService.startService(context);
+                if (TextUtils.isEmpty(musicData.getUrl())) {
+                    return;
                 }
+                if (musicData.isPlaying()) {//点击的时候正在播放
+                    songLogoImageView.clearAnimation();
+                    diskImageView.clearAnimation();
+                    startImageView.setImageResource(R.mipmap.play_fm_btn_play_prs);
+                    musicData.setFlag(MusicData.PAUSE);
+                    needleImageView.startAnimation(upAnimation);
+                } else {
+                    songLogoImageView.startAnimation(circulationAnimation2);
+                    diskImageView.startAnimation(circulationAnimation);
+                    startImageView.setImageResource(R.mipmap.play_fm_btn_pause_prs);
+                    musicData.setFlag(MusicData.RESTART);
+                    needleImageView.startAnimation(downAnimation);
+                }
+                PlayMusicService.startService(context);
+
                 break;
 
             default:
@@ -130,6 +179,9 @@ public class MusicInfoActivity extends BaseActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * 初始化各种动画
+     */
     private void initAnimation() {
         musicData = MusicData.getInstance();
         upAnimation = new RotateAnimation(0, -30,
@@ -143,12 +195,17 @@ public class MusicInfoActivity extends BaseActivity implements View.OnClickListe
                 Animation.RELATIVE_TO_SELF, 0.111f);
         circulationAnimation = new RotateAnimation(0, -360,
                 Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        circulationAnimation2 = new RotateAnimation(0, -360,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+
 
         upAnimation.setDuration(1000);
         upAnimation_0ms.setDuration(0);
         downAnimation.setDuration(1000);
         circulationAnimation.setDuration(15000);
         circulationAnimation.setRepeatCount(1000000);
+        circulationAnimation2.setDuration(15000);
+        circulationAnimation2.setRepeatCount(1000000);
 
         upAnimation.setFillAfter(true);
         upAnimation_0ms.setFillAfter(true);

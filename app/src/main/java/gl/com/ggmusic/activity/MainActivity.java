@@ -1,12 +1,18 @@
 package gl.com.ggmusic.activity;
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +21,8 @@ import gl.com.ggmusic.activity.main.MainDiscoverView;
 import gl.com.ggmusic.activity.main.MainFriendsView;
 import gl.com.ggmusic.activity.main.MainMusicView;
 import gl.com.ggmusic.adapter.CommonUseViewPagerAdapter;
+import gl.com.ggmusic.constants.Constants;
+import gl.com.ggmusic.util.GlobalInit;
 import gl.com.ggmusic.widget.BottomMusicView;
 
 
@@ -65,6 +73,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     void init() {
+
+        new GlobalInit(this);
+
+        //检查权限，生成缓存音乐的文件夹
+
+        if (ContextCompat.checkSelfPermission(context,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        } else {
+            mkDir();
+        }
+
         //移除baseActivity的view,使用自定义的
         outmosterRelativeLayout.removeAllViews();
         setContentViewReal(R.layout.activity_main);
@@ -88,6 +109,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         initViewPager();
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mkDir();
+            } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                showToast("拒绝文件读写权限音乐将无法下载！");
+            }
+        }
+    }
+
+    private void mkDir() {
+        File dir = new File(Constants.DOWNLOAD_PATH);
+        if (!dir.exists()) {
+            System.out.println(dir.mkdirs());
+        }
     }
 
     @Override

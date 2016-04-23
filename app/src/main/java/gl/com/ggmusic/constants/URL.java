@@ -19,4 +19,12 @@ public class URL {
      */
     public static final String KUGOU_INFO = "http://trackercdn.kugou.com/i/";
 
+    /**
+     * 获取歌词接口
+     */
+    public static final String KUGOU_KRC = "http://mobilecdn.kugou.com/new/app/i/krc.php";
+
+
+
+
 }

@@ -186,6 +186,8 @@ public class SearchActivity extends BaseActivity {
                 musicData.setSinger(infoBean.getSingername());
                 musicData.setSongName(infoBean.getFilename());
                 musicData.setSongLogo("");
+                musicData.setDurtion(infoBean.getDuration());
+                musicData.setHash(infoBean.getHash());
                 PlayMusicService.startService(context);
                 showToast("准备开始播放：" + infoBean.getSingername());
             }

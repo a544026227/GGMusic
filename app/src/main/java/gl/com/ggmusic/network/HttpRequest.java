@@ -107,6 +107,7 @@ public class HttpRequest {
             httpResponse.setResponseMessage(connection.getResponseMessage());
             if (httpResponse.getResponseCode() == 200) {
                 is = connection.getInputStream();
+                httpResponse.setInputStream(is);
                 httpResponse.setResponseContent(Util.inputSteamToString(is));
             }
         } catch (IOException e) {

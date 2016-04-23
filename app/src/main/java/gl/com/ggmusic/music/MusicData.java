@@ -1,5 +1,7 @@
 package gl.com.ggmusic.music;
 
+import gl.com.ggmusic.util.MyUtil;
+
 /**
  * Created by guilinlin on 16/4/18 23:17.
  * dese:该类是一个全局单例
@@ -64,6 +66,14 @@ public class MusicData {
      * 音乐的尺寸
      */
     private int totalSize;
+    /**
+     * 歌曲时间
+     */
+    private int durtion = 0;
+    /**
+     * 歌曲hash值
+     */
+    private String hash ;
 
     private static MusicData musicData;
 
@@ -112,10 +122,14 @@ public class MusicData {
     public String getSongName() {
         return songName;
     }
+    public String getSongNameEncoder() {
+        return  MyUtil.getURLEncoder(songName);
+    }
 
     public void setSongName(String songName) {
         this.songName = songName;
     }
+
 
     public String getSinger() {
         return singer;
@@ -155,5 +169,21 @@ public class MusicData {
 
     public void setTotalSize(int totalSize) {
         this.totalSize = totalSize;
+    }
+
+    public int getDurtion() {
+        return durtion;
+    }
+
+    public void setDurtion(int durtion) {
+        this.durtion = durtion;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 }

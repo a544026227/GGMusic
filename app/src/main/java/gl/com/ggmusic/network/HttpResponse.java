@@ -1,5 +1,7 @@
 package gl.com.ggmusic.network;
 
+import java.io.InputStream;
+
 /**
  * 用于存储Http返回的数据、错误码等
  */
@@ -16,6 +18,11 @@ public class HttpResponse {
      * 如果code等于200，获取字符串
      */
     private String responseContent = "";
+
+    /**
+     * 网页返回的字节流
+     */
+    private InputStream inputStream;
 
     public int getResponseCode() {
         return responseCode;
@@ -41,13 +48,12 @@ public class HttpResponse {
         this.responseContent = responseContent;
     }
 
-    @Override
-    public String toString() {
-        return "HttpResponse{" +
-                "responseCode=" + responseCode +
-                ", responseMessage='" + responseMessage + '\'' +
-                ", responseContent='" + responseContent + '\'' +
-                '}';
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
     }
 }
     
