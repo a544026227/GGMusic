@@ -107,15 +107,13 @@ public class SearchActivity extends BaseActivity {
         hotSearchFlowLayout.addView(tv, lp);
     }
 
-    private GGHttp<KugouSearchListJson> ggHttpSearchList;
-
     /**
      * 根据具体名称获取歌曲信息列表
      *
      * @param key
      */
     private void getSearchList(String key) {
-        ggHttpSearchList = new GGHttp(URL.KUGOU_SEARCH_LIST, KugouSearchListJson.class);
+        GGHttp<KugouSearchListJson> ggHttpSearchList = new GGHttp<KugouSearchListJson>(URL.KUGOU_SEARCH_LIST, KugouSearchListJson.class);
         ggHttpSearchList.setMethodType("GET");
         ggHttpSearchList.add("page", "1");
         ggHttpSearchList.add("pagesize", "30");
