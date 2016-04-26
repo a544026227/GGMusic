@@ -79,6 +79,14 @@ public class GGHttp<T extends Object> {
     }
 
     /**
+     * 直接连接网络并获取返回数据，主要是为了取得InputStream
+     */
+    public HttpResponse getHttpResponseStream() {
+        request = new HttpRequest(url, methodType, body, null);
+        return request.getHttpResponseInputSream();
+    }
+
+    /**
      * 对外提供一个增加参数的方法
      *
      * @param key

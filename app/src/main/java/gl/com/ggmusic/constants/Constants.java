@@ -19,7 +19,7 @@ public class Constants {
 
     public static final String DOWNLOAD_PATH =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-                    + "GGMusic/download/";
+                    + "/GGMusic/download/";
 
 
     private Constants() {

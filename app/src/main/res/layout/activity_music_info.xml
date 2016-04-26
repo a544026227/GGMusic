@@ -30,10 +30,8 @@
             android:id="@+id/songLogoImageView"
             android:layout_width="170dp"
             android:layout_height="170dp"
-            android:layout_marginTop="5dp"
             android:layout_gravity="center"
-            android:src="@mipmap/about_logo"
-            />
+            android:src="@mipmap/about_logo"/>
     </FrameLayout>
 
 

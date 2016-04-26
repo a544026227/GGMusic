@@ -127,4 +127,28 @@ public class HttpRequest {
         System.out.println(httpResponse.toString());
         return httpResponse;
     }
+
+    public HttpResponse getHttpResponseInputSream() {
+
+        HttpResponse httpResponse = new HttpResponse();
+
+        initConnection();
+
+        InputStream is = null;
+        try {
+            System.out.println(connection.getURL());
+            connection.connect();
+
+            //获取网络请求结果，并保存至httpResponse对象中
+            httpResponse.setResponseCode(connection.getResponseCode());
+            httpResponse.setResponseMessage(connection.getResponseMessage());
+            if (httpResponse.getResponseCode() == 200) {
+                is = connection.getInputStream();
+                httpResponse.setInputStream(is);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return httpResponse;
+    }
 }

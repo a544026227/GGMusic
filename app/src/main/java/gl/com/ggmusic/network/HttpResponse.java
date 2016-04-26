@@ -53,7 +53,19 @@ public class HttpResponse {
     }
 
     public void setInputStream(InputStream inputStream) {
+
+
         this.inputStream = inputStream;
+    }
+
+    @Override
+    public String toString() {
+        return "HttpResponse{" +
+                "responseCode=" + responseCode +
+                ", responseMessage='" + responseMessage + '\'' +
+                ", responseContent='" + responseContent + '\'' +
+                ", inputStream=" + inputStream +
+                '}';
     }
 }
     

@@ -1,6 +1,9 @@
 package gl.com.ggmusic.activity;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
@@ -13,9 +16,20 @@ import android.widget.RelativeLayout;
 
 import gl.com.ggmusic.R;
 import gl.com.ggmusic.constants.Constants;
+import gl.com.ggmusic.constants.URL;
 import gl.com.ggmusic.music.MusicData;
 import gl.com.ggmusic.music.PlayMusicService;
+import gl.com.ggmusic.network.GGHttp;
+import gl.com.ggmusic.network.HttpResponse;
+import gl.com.ggmusic.util.BitmapUtil;
+import gl.com.ggmusic.util.FileUtils;
+import gl.com.ggmusic.util.KrcUtil;
 import gl.com.ggmusic.widget.CircleImageView;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class MusicInfoActivity extends BaseActivity implements View.OnClickListener {
 
@@ -75,11 +89,26 @@ public class MusicInfoActivity extends BaseActivity implements View.OnClickListe
 
         bottomMusicView.setVisibility(View.GONE);//当前界面无须显示bottomView
 
-        View view = new View(context);
-        view.setBackgroundColor(0x44000000);
-        outmosterRelativeLayout.addView(view, 0);
 
-        outmosterRelativeLayout.setBackgroundColor(0xff000000);
+        Observable
+                .just(1)
+                .observeOn(Schedulers.io())
+                .map(new Func1<Integer, Drawable>() {
+                    @Override
+                    public Drawable call(Integer integer) {
+                        Bitmap bitmap = BitmapUtil.getBitmapFromDrawable(
+                                getResources().getDrawable(R.drawable.simple));
+                        bitmap = BitmapUtil.blur(context, bitmap, 10);
+                        return new BitmapDrawable(bitmap);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Drawable>() {
+                    @Override
+                    public void call(Drawable drawable) {
+                        outmosterRelativeLayout.setBackgroundDrawable(drawable);
+                    }
+                });
         outmosterRelativeLayout.setPadding
                 (0, Constants.statusHeight, 0, Constants.navigationBarheight);//设置上边距，显示状态栏
 
@@ -96,34 +125,37 @@ public class MusicInfoActivity extends BaseActivity implements View.OnClickListe
         }
 
 
-//        rx.Observable
-//                .just(1)
-//                .observeOn(Schedulers.io())
-//                .map(new Func1<Integer, HttpResponse>() {
-//
-//                    @Override
-//                    public HttpResponse call(Integer integer) {
-//                        GGHttp ggHttp = new GGHttp(URL.KUGOU_KRC, String.class);
-//                        ggHttp.setMethodType("GET");
-//                        ggHttp.add("keyword", musicData.getSongNameEncoder());
-//                        ggHttp.add("timelength", musicData.getDurtion() + "000");
-//                        ggHttp.add("type", "1");
-//                        ggHttp.add("cmd", "200");
-//                        ggHttp.add("hash", musicData.getHash());
-//                        return ggHttp.getHttpResponse();
-//                    }
-//
-//                })
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Action1<HttpResponse>() {
-//                    @Override
-//                    public void call(HttpResponse response) {
-//                        System.out.println(response.getResponseCode());
-//                        InputStream is = response.getInputStream();
-//                        System.out.println(FileUtils.writeFile(Constants.DOWNLOAD_PATH+TEMPORARY_FILE_NAME,is));
-//
-//                    }
-//                });
+        Observable
+                .just(1)
+                .observeOn(Schedulers.io())
+                .map(new Func1<Integer, HttpResponse>() {
+                    @Override
+                    public HttpResponse call(Integer integer) {
+                        GGHttp ggHttp = new GGHttp(URL.KUGOU_KRC, String.class);
+                        ggHttp.setMethodType("GET");
+                        ggHttp.add("keyword", musicData.getSongNameEncoder());
+                        ggHttp.add("timelength", musicData.getDurtion() + "000");
+                        ggHttp.add("type", "1");
+                        ggHttp.add("cmd", "200");
+                        ggHttp.add("hash", musicData.getHash());
+                        return ggHttp.getHttpResponseStream();
+                    }
+
+                })
+                .observeOn(Schedulers.io())
+                .map(new Func1<HttpResponse, String>() {
+                    @Override
+                    public String call(HttpResponse response) {
+                        return KrcUtil.convt(response.getInputStream());
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String s) {
+                        FileUtils.writeFile(Constants.DOWNLOAD_PATH + musicData.getSongName() + ".lrc", s);
+                    }
+                });
 
 
     }
