@@ -1,6 +1,7 @@
 package gl.com.ggmusic.util;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
@@ -66,6 +67,9 @@ public class MyUtil {
      * @param str
      */
     public static String getURLEncoder(String str) {
+        if(TextUtils.isEmpty(str)){
+            return "";
+        }
         try {
             return URLEncoder.encode(str, "UTF-8");
         } catch (UnsupportedEncodingException e) {

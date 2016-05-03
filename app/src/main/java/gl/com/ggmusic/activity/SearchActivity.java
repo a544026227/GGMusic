@@ -16,19 +16,17 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import gl.com.ggmusic.R;
 import gl.com.ggmusic.adapter.SearchHintAdapter;
 import gl.com.ggmusic.adapter.SearchListAdapter;
-import gl.com.ggmusic.bean.KugouInfoJson;
 import gl.com.ggmusic.bean.KugouSearchHintJson;
 import gl.com.ggmusic.bean.KugouSearchListJson;
-import gl.com.ggmusic.constants.URL;
-import gl.com.ggmusic.music.MusicData;
-import gl.com.ggmusic.network.GGHttp;
 import gl.com.ggmusic.music.PlayMusicService;
+import gl.com.ggmusic.presenter.SearchPresenter;
 import gl.com.ggmusic.util.DensityUtils;
-import gl.com.ggmusic.util.MyUtil;
+import gl.com.ggmusic.view.ISearchActivity;
 import gl.com.ggmusic.widget.FlowLayout;
-import rx.functions.Action1;
 
-public class SearchActivity extends BaseActivity {
+public class SearchActivity extends BaseActivity implements ISearchActivity {
+
+    private SearchPresenter searchPresenter;
 
     private MaterialEditText searchEditText;
     private ImageView deleteImageView;
@@ -48,6 +46,8 @@ public class SearchActivity extends BaseActivity {
     @Override
     void init() {
 
+        searchPresenter = new SearchPresenter(this);
+
         initToolBar("");
         View view = LayoutInflater.from(context).inflate(R.layout.layout_search_top, toolbar);
 
@@ -59,6 +59,8 @@ public class SearchActivity extends BaseActivity {
 
         searchHintAdapter = new SearchHintAdapter(context);
         searchListAdapter = new SearchListAdapter(context);
+
+        searchPresenter.addHotText();
     }
 
     @Override
@@ -67,139 +69,22 @@ public class SearchActivity extends BaseActivity {
         searchHintListView.setAdapter(searchHintAdapter);
         searchListListView.setAdapter(searchListAdapter);
 
-        addTextViewToFlowLayout("许嵩");
-        addTextViewToFlowLayout("我是歌手");
-        addTextViewToFlowLayout("寂寞沙洲冷");
-        addTextViewToFlowLayout("暖春");
-        addTextViewToFlowLayout("米店");
-        addTextViewToFlowLayout("Adele");
-        addTextViewToFlowLayout("不为谁而作的歌");
-        addTextViewToFlowLayout("You Are My EveryThing");
-        addTextViewToFlowLayout("Adele");
-        addTextViewToFlowLayout("有心人");
-
 
     }
-
-    /**
-     * 增加文字到流式布局中，这段代码可以优化
-     *
-     * @param name
-     */
-    private void addTextViewToFlowLayout(final String name) {
-        TextView tv = new TextView(context);
-        ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams
-                .WRAP_CONTENT);
-        int pad = DensityUtils.dp2px(context, 7);
-        tv.setPadding(pad, pad, pad, pad);
-        tv.setTextSize(19);
-        tv.setTextColor(getResources().getColor(R.color.colorDefaultBlack));
-        tv.setText(name);
-        lp.bottomMargin = DensityUtils.dp2px(context, 13);
-        lp.rightMargin = DensityUtils.dp2px(context, 13);
-        tv.setBackgroundResource(R.drawable.bg_grey_stoke_1px_corrner_2dp);
-        tv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getSearchList(name);
-            }
-        });
-        hotSearchFlowLayout.addView(tv, lp);
-    }
-
-    /**
-     * 根据具体名称获取歌曲信息列表
-     *
-     * @param key
-     */
-    private void getSearchList(String key) {
-        GGHttp<KugouSearchListJson> ggHttpSearchList = new GGHttp<KugouSearchListJson>(URL.KUGOU_SEARCH_LIST, KugouSearchListJson.class);
-        ggHttpSearchList.setMethodType("GET");
-        ggHttpSearchList.add("page", "1");
-        ggHttpSearchList.add("pagesize", "30");
-        ggHttpSearchList.add("showtype", "10");
-        ggHttpSearchList.add("plat", "2");
-        ggHttpSearchList.add("version", "7980");
-        ggHttpSearchList.add("tag", "1");
-        ggHttpSearchList.add("correct", "1");
-        ggHttpSearchList.add("privilege", "1");
-        ggHttpSearchList.add("sver", "5");
-        ggHttpSearchList.add("keyword", MyUtil.getURLEncoder(key));
-        ggHttpSearchList.send(new Action1<KugouSearchListJson>() {
-            @Override
-            public void call(KugouSearchListJson kugouSearchListJson) {
-                hotSearchFlowLayout.setVisibility(View.GONE);
-                searchHintAdapter.getList().clear();
-                searchHintAdapter.notifyDataSetChanged();
-                searchListAdapter.getList().clear();
-                searchListAdapter.getList().addAll(kugouSearchListJson.getData().getInfo());
-                searchListAdapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    private GGHttp<KugouSearchHintJson> ggHttpSearchHint;
-
-    /**
-     * 获取提供建议的搜索列表
-     *
-     * @param key
-     */
-    private void getSearchHint(String key) {
-        ggHttpSearchHint = new GGHttp<>(URL.KUGOU_SEARCH, KugouSearchHintJson.class);
-        ggHttpSearchHint.setMethodType("GET");
-        ggHttpSearchHint.add("cmd", "302");
-        ggHttpSearchHint.add("keyword", MyUtil.getURLEncoder(key));
-        ggHttpSearchHint.send(new Action1<KugouSearchHintJson>() {
-            @Override
-            public void call(KugouSearchHintJson kugouSearchHintJson) {
-                searchHintAdapter.getList().clear();
-                searchHintAdapter.getList().addAll(kugouSearchHintJson.getData());
-                searchHintAdapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    private GGHttp<KugouInfoJson> ggHttpInfo;
-
-    /**
-     * 根据hash值获取详细数据
-     *
-     * @param infoBean
-     */
-    private void getInfo(final KugouSearchListJson.DataBean.InfoBean infoBean) {
-        ggHttpInfo = new GGHttp<>(URL.KUGOU_INFO, KugouInfoJson.class);
-        ggHttpInfo.setMethodType("GET");
-        ggHttpInfo.add("acceptMp3", "1");
-        ggHttpInfo.add("key", MyUtil.getMD5(infoBean.getHash() + "kgcloud").toLowerCase());
-        ggHttpInfo.add("cmd", "3");
-        ggHttpInfo.add("pid", "6");
-        ggHttpInfo.add("hash", infoBean.getHash());
-        ggHttpInfo.send(new Action1<KugouInfoJson>() {
-            @Override
-            public void call(KugouInfoJson kugouInfoJson) {
-                MusicData musicData = MusicData.getInstance();
-                musicData.setFlag(MusicData.START);
-                musicData.setUrl(kugouInfoJson.getUrl());
-                musicData.setSinger(infoBean.getSingername());
-                musicData.setSongName(infoBean.getFilename());
-                musicData.setSongLogo("");
-                musicData.setDurtion(infoBean.getDuration());
-                musicData.setHash(infoBean.getHash());
-                PlayMusicService.startService(context);
-                showToast("准备开始播放：" + infoBean.getSingername());
-            }
-        });
-    }
-
 
     @Override
     void setListener() {
+        deleteImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchEditText.setText("");
+                searchHintListView.setVisibility(View.GONE);
+            }
+        });
         searchHintListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                getSearchList(searchHintAdapter.getList().get(i).getKeyword());
-
+                searchPresenter.setSearchList(searchHintAdapter.getList().get(i).getKeyword());
 
             }
         });
@@ -207,7 +92,7 @@ public class SearchActivity extends BaseActivity {
         searchListListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                getInfo(searchListAdapter.getList().get(i));
+                searchPresenter.getMusicInfo(searchListAdapter.getList().get(i));
             }
         });
 
@@ -226,9 +111,56 @@ public class SearchActivity extends BaseActivity {
             public void afterTextChanged(Editable editable) {
                 String searchString = editable.toString();
                 if (!TextUtils.isEmpty(searchString)) {
-                    getSearchHint(searchString);
+                    searchPresenter.setSearchHintList(searchString);
                 }
             }
         });
     }
+
+    @Override
+    public void addTextViewToFlowLayout(final String name) {
+        TextView tv = new TextView(context);
+        ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams
+                .WRAP_CONTENT);
+        int pad = DensityUtils.dp2px(context, 7);
+        tv.setPadding(pad, pad, pad, pad);
+        tv.setTextSize(19);
+        tv.setTextColor(getResources().getColor(R.color.colorDefaultBlack));
+        tv.setText(name);
+        lp.bottomMargin = DensityUtils.dp2px(context, 13);
+        lp.rightMargin = DensityUtils.dp2px(context, 13);
+        tv.setBackgroundResource(R.drawable.bg_grey_stoke_1px_corrner_2dp);
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchPresenter.setSearchList(name);
+            }
+        });
+        hotSearchFlowLayout.addView(tv, lp);
+    }
+
+    @Override
+    public void setSearchListAdapter(KugouSearchListJson kugouSearchListJson) {
+        hotSearchFlowLayout.setVisibility(View.GONE);
+        searchHintAdapter.getList().clear();
+        searchHintAdapter.notifyDataSetChanged();
+        searchListAdapter.getList().clear();
+        searchListAdapter.getList().addAll(kugouSearchListJson.getData().getInfo());
+        searchListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void setSearchHintAdapter(KugouSearchHintJson kugouSearchHintJson) {
+        searchHintAdapter.getList().clear();
+        searchHintAdapter.getList().addAll(kugouSearchHintJson.getData());
+        searchHintAdapter.notifyDataSetChanged();
+    }
+
+
+    public void playMusic(final KugouSearchListJson.DataBean.InfoBean infoBean) {
+        PlayMusicService.startService(context);
+        showToast("准备开始播放：" + infoBean.getSingername());
+        startActivity(MusicInfoActivity.class);
+    }
+
 }

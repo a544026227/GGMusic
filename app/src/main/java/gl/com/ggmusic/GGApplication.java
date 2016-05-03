@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import gl.com.ggmusic.constants.Constants;
 import gl.com.ggmusic.music.MusicData;
 import gl.com.ggmusic.music.PlayMusicService;
@@ -26,7 +29,15 @@ public class GGApplication extends Application {
 
         measureScreen();
 
+        initImageLoader();
 
+
+
+    }
+
+    public void initImageLoader(){
+        ImageLoaderConfiguration configuration = ImageLoaderConfiguration.createDefault(this);
+        ImageLoader.getInstance().init(configuration);
     }
 
     /**

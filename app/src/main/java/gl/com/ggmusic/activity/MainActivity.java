@@ -22,7 +22,8 @@ import gl.com.ggmusic.activity.main.MainFriendsView;
 import gl.com.ggmusic.activity.main.MainMusicView;
 import gl.com.ggmusic.adapter.CommonUseViewPagerAdapter;
 import gl.com.ggmusic.constants.Constants;
-import gl.com.ggmusic.util.GlobalInit;
+import gl.com.ggmusic.presenter.MainPresenter;
+import gl.com.ggmusic.view.IMainActivity;
 import gl.com.ggmusic.widget.BottomMusicView;
 
 
@@ -31,7 +32,7 @@ import gl.com.ggmusic.widget.BottomMusicView;
  * 注意事项:
  * 1.构造方法中需调用setContentView()；
  */
-public class MainActivity extends BaseActivity implements View.OnClickListener, DrawerLayout.DrawerListener {
+public class MainActivity extends BaseActivity implements IMainActivity,View.OnClickListener {
 
 
     /**
@@ -59,13 +60,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     private android.support.v4.view.ViewPager contentViewPager;
     /**
-     * 侧滑菜单
-     */
-//    private View menuLayout;
-    /**
      * 官方提供的侧滑菜单
      */
     private DrawerLayout drawerLayout;
+    /**
+     * presenter
+     */
+    private MainPresenter mainPresenter;
 
     public MainActivity() {
         setContentView(R.layout.activity_main);
@@ -74,25 +75,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     void init() {
 
-        new GlobalInit(this);
-
-        //检查权限，生成缓存音乐的文件夹
-
-        if (ContextCompat.checkSelfPermission(context,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        } else {
-            mkDir();
-        }
-
         //移除baseActivity的view,使用自定义的
         outmosterRelativeLayout.removeAllViews();
         setContentViewReal(R.layout.activity_main);
 
+        makeMusicCacheDir();
+
+        mainPresenter = new MainPresenter(this);
+
 
         this.drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-//        this.menuLayout = findViewById(R.id.menuLayout);
         this.contentViewPager = (ViewPager) findViewById(R.id.contentViewPager);
         this.searchImageView = (ImageView) findViewById(R.id.searchImageView);
         this.friendsImageView = (ImageView) findViewById(R.id.friendsImageView);
@@ -112,25 +104,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mkDir();
-            } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                showToast("拒绝文件读写权限音乐将无法下载！");
-            }
-        }
-    }
-
-    private void mkDir() {
-        File dir = new File(Constants.DOWNLOAD_PATH);
-        if (!dir.exists()) {
-            System.out.println(dir.mkdirs());
-        }
-    }
-
-    @Override
     void setListener() {
 
         this.searchImageView.setOnClickListener(this);
@@ -138,7 +111,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         this.musicImageView.setOnClickListener(this);
         this.discoverImageView.setOnClickListener(this);
         this.menuImageView.setOnClickListener(this);
-        this.drawerLayout.addDrawerListener(this);
     }
 
     @Override
@@ -168,7 +140,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     /**
      * 初始化首页3个ViewPager
      */
-    private void initViewPager() {
+    @Override
+    public void initViewPager() {
         List<View> list = new ArrayList<>();
         list.add(new MainDiscoverView(context));
         list.add(new MainMusicView(context));
@@ -189,8 +162,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         });
     }
 
-
-    private void showViewPager(int position) {
+    @Override
+    public void showViewPager(int position) {
         contentViewPager.setCurrentItem(position);
         if (position == 0) {
             discoverImageView.setImageResource(R.mipmap.actionbar_discover_selected);
@@ -208,37 +181,41 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
+    @Override
+    public void makeMusicCacheDir() {
+        if (ContextCompat.checkSelfPermission(context,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        } else {
+            mkDir();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mkDir();
+            } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                showToast("拒绝文件读写权限音乐将无法下载！");
+            }
+        }
+    }
+
+    private void mkDir() {
+        File dir = new File(Constants.DOWNLOAD_PATH);
+        if (!dir.exists()) {
+            System.out.println(dir.mkdirs());
+        }
+    }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
 
-    @Override
-    public void onDrawerSlide(View drawerView, float slideOffset) {
 
-    }
-
-    /**
-     * 侧滑菜单被打开
-     *
-     * @param drawerView
-     */
-    @Override
-    public void onDrawerOpened(View drawerView) {
-    }
-
-    /**
-     * 监听侧滑菜单关闭
-     *
-     * @param drawerView
-     */
-    @Override
-    public void onDrawerClosed(View drawerView) {
-    }
-
-    @Override
-    public void onDrawerStateChanged(int newState) {
-
-    }
 }

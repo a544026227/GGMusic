@@ -23,6 +23,10 @@ public class URL {
      * 获取歌词接口
      */
     public static final String KUGOU_KRC = "http://mobilecdn.kugou.com/new/app/i/krc.php";
+    /**
+     * 获取歌手头像接口
+     */
+    public static final String KUGOU_HEAD_IMAGE = "http://mobilecdn.kugou.com/new/app/i/yueku.php";
 
 
 
