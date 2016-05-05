@@ -159,7 +159,6 @@ public class SearchActivity extends BaseActivity implements ISearchActivity {
 
     public void playMusic(final KugouSearchListJson.DataBean.InfoBean infoBean) {
         PlayMusicService.startService(context);
-        showToast("准备开始播放：" + infoBean.getSingername());
         startActivity(MusicInfoActivity.class);
     }
 

@@ -42,7 +42,6 @@ class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         switch (musicData.getFlag()) {
             case MusicData.START:
                 playUrlMusic(musicData.getUrl());
-                musicData.setPlaying(true);
                 updateProcessTask.run();
                 break;
 
@@ -98,6 +97,7 @@ class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
     public void onPrepared(MediaPlayer mediaPlayer) {
         System.out.println("onPrepared");
         mediaPlayer.start();
+        MusicData.getInstance().setPlaying(true);
         MusicData.getInstance().setTotalSize(mediaPlayer.getDuration());
     }
 

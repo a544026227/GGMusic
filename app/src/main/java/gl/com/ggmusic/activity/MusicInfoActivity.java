@@ -1,5 +1,6 @@
 package gl.com.ggmusic.activity;
 
+import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -46,19 +47,29 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
     private Animation upAnimation;
     private Animation upAnimation_0ms;
     private Animation downAnimation;
-    private Animation circulationAnimation;//循环转动的动画
-    private Animation circulationAnimation2;//循环转动的动画
+    /**
+     * 头像的旋转属性动画
+     */
+    private ValueAnimator rotationAnimatior;
+    /**
+     * 标记停止时转到了多少度，实现停止之后继续转动的效果,每当暂停时记录位置
+     */
+    private float currentRotation = 0;
+    /**
+     * 光碟图片
+     */
     private ImageView diskImageView;
+    /**
+     * 头像圆形图片
+     */
+    private gl.com.ggmusic.widget.CircleImageView songLogoImageView;
     private ImageView circulationImageView;
     private ImageView prevImageView;
     private ImageView startImageView;
     private ImageView nextImageView;
     private ImageView menuImageView;
-    private android.widget.RelativeLayout titleRelativeLayut;
-    private View centerView;
-    private gl.com.ggmusic.widget.CircleImageView songLogoImageView;
 
-    private int currentRotation = 0;
+    private View centerView;
 
 
     public MusicInfoActivity() {
@@ -70,8 +81,9 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
 
         presenter = new MusicInfoPresenter(this);
 
+        musicData = MusicData.getInstance();
+
         this.needleImageView = (ImageView) findViewById(R.id.needleImageView);
-        this.titleRelativeLayut = (RelativeLayout) findViewById(R.id.titleRelativeLayut);
         this.menuImageView = (ImageView) findViewById(R.id.menuImageView);
         this.nextImageView = (ImageView) findViewById(R.id.nextImageView);
         this.startImageView = (ImageView) findViewById(R.id.startImageView);
@@ -107,19 +119,7 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
         outmosterRelativeLayout.setPadding
                 (0, Constants.statusHeight, 0, Constants.navigationBarheight);
 
-        songLogoImageView.startAnimation(circulationAnimation2);
-        diskImageView.startAnimation(circulationAnimation);
-
-        if (!musicData.isPlaying()) {//如果音乐是暂停状态
-            diskImageView.clearAnimation();
-            songLogoImageView.clearAnimation();
-            needleImageView.startAnimation(upAnimation_0ms);//抬起播放杆
-            startImageView.setImageResource(R.mipmap.play_fm_btn_play_prs);
-        } else {
-            startImageView.setImageResource(R.mipmap.play_fm_btn_pause_prs);
-        }
-
-
+        setViewStatus(musicData.isPlaying());
     }
 
     @Override
@@ -134,25 +134,42 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
                 if (TextUtils.isEmpty(musicData.getUrl())) {
                     return;
                 }
-                if (musicData.isPlaying()) {//点击的时候正在播放
-                    songLogoImageView.clearAnimation();
-                    diskImageView.clearAnimation();
-                    startImageView.setImageResource(R.mipmap.play_fm_btn_play_prs);
-                    musicData.setFlag(MusicData.PAUSE);
-                    needleImageView.startAnimation(upAnimation);
-                } else {
-                    songLogoImageView.startAnimation(circulationAnimation2);
-                    diskImageView.startAnimation(circulationAnimation);
-                    startImageView.setImageResource(R.mipmap.play_fm_btn_pause_prs);
-                    musicData.setFlag(MusicData.RESTART);
-                    needleImageView.startAnimation(downAnimation);
-                }
+                //如果音乐正在播放，暂停；如果已暂停，开始播放
+                musicData.setFlag(musicData.isPlaying() ? MusicData.PAUSE : MusicData.RESTART);
+                setViewStatus(!musicData.isPlaying());
                 PlayMusicService.startService(context);
 
                 break;
 
             default:
                 break;
+        }
+    }
+
+    /**
+     * 根据播放音乐的状态修改界面
+     *
+     * @param isPlaying
+     *         true表示正在播放
+     */
+    private void setViewStatus(boolean isPlaying) {
+        if (isPlaying) {
+            rotationAnimatior.start();
+            startImageView.setImageResource(R.mipmap.play_fm_btn_pause_prs);
+            needleImageView.startAnimation(downAnimation);//放下播放杆
+        } else {
+            //记录旋转到的位置
+            if (rotationAnimatior.getAnimatedValue() != null) {
+                currentRotation = currentRotation + (float) rotationAnimatior.getAnimatedValue();
+            }
+            //停止属性动画
+            rotationAnimatior.cancel();
+            rotationAnimatior.end();
+            //保存当前旋转的角度
+            diskImageView.setRotation(currentRotation);
+            songLogoImageView.setRotation(currentRotation);
+            startImageView.setImageResource(R.mipmap.play_fm_btn_play_prs);
+            needleImageView.startAnimation(upAnimation);//抬起播放杆
         }
     }
 
@@ -179,7 +196,21 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
      */
     @Override
     public void initAnimation() {
-        musicData = MusicData.getInstance();
+        rotationAnimatior = new ValueAnimator();
+        rotationAnimatior.setDuration(25000);
+        rotationAnimatior.setObjectValues(0f, 360f);
+        rotationAnimatior.setRepeatCount(1000000);
+        rotationAnimatior.setInterpolator(new LinearInterpolator());
+        rotationAnimatior.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float r = (float) valueAnimator.getAnimatedValue();
+                songLogoImageView.setRotation(r + currentRotation);
+                diskImageView.setRotation(r + currentRotation);
+
+            }
+        });
+
         upAnimation = new RotateAnimation(0, -30,
                 Animation.RELATIVE_TO_SELF, 0.167f,
                 Animation.RELATIVE_TO_SELF, 0.111f);
@@ -189,21 +220,11 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
         downAnimation = new RotateAnimation(-30, 0,
                 Animation.RELATIVE_TO_SELF, 0.167f,
                 Animation.RELATIVE_TO_SELF, 0.111f);
-        circulationAnimation = new RotateAnimation(0, 360,
-                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        circulationAnimation2 = new RotateAnimation(0, 360,
-                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
 
 
         upAnimation.setDuration(1000);
         upAnimation_0ms.setDuration(0);
         downAnimation.setDuration(1000);
-        circulationAnimation.setDuration(20000);
-        circulationAnimation.setRepeatCount(1000000);
-        circulationAnimation.setInterpolator(new LinearInterpolator());
-        circulationAnimation2.setDuration(20000);
-        circulationAnimation2.setRepeatCount(1000000);
-        circulationAnimation2.setInterpolator(new LinearInterpolator());
 
         upAnimation.setFillAfter(true);
         upAnimation_0ms.setFillAfter(true);
@@ -237,6 +258,10 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
                                 outmosterRelativeLayout.setBackgroundDrawable(drawable);
                             }
                         });
+                //获取到图片并且显示后加载动画
+                if (musicData.isPlaying()) {
+                    rotationAnimatior.start();
+                }
             }
         });
     }
