@@ -27,13 +27,14 @@ import gl.com.ggmusic.presenter.MusicInfoPresenter;
 import gl.com.ggmusic.util.BitmapUtil;
 import gl.com.ggmusic.view.IMusicInfoActivity;
 import gl.com.ggmusic.widget.CircleImageView;
+import gl.com.ggmusic.widget.MusicProcessBar;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivity, View.OnClickListener {
+public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivity, View.OnClickListener, MusicProcessBar.OnVernierSlideListener {
 
     /**
      * 临时存储歌词文件的名称
@@ -68,6 +69,7 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
     private ImageView startImageView;
     private ImageView nextImageView;
     private ImageView menuImageView;
+    private MusicProcessBar musicProcessBar;
 
     private View centerView;
 
@@ -91,6 +93,7 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
         this.circulationImageView = (ImageView) findViewById(R.id.circulationImageView);
         this.diskImageView = (ImageView) findViewById(R.id.diskImageView);
         this.songLogoImageView = (CircleImageView) findViewById(R.id.songLogoImageView);
+        this.musicProcessBar = (MusicProcessBar) findViewById(R.id.musicProcessBar);
 
         initAnimation();
     }
@@ -125,6 +128,10 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
     @Override
     void setListener() {
         startImageView.setOnClickListener(this);
+        musicProcessBar.setOnVernierSlideListener(this);
+    }
+    @Override
+    public void onSlide(float percent) {
     }
 
     @Override
@@ -265,4 +272,6 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
             }
         });
     }
+
+
 }

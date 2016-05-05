@@ -9,7 +9,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="#D5D5D5" />
+        android:background="#D5D5D5"/>
 
     <View
         android:id="@+id/centerView"
@@ -34,7 +34,7 @@
             android:id="@+id/songLogoImageView"
             android:layout_width="190dp"
             android:layout_height="190dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"/>
     </FrameLayout>
 
 
@@ -90,5 +90,13 @@
             android:src="@mipmap/actionbar_menu"/>
     </RelativeLayout>
 
+    <gl.com.ggmusic.widget.MusicProcessBar
+        android:id="@+id/musicProcessBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/titleRelativeLayut"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"/>
 
 </RelativeLayout>
