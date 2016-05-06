@@ -36,13 +36,14 @@ class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      *
      * @param musicData
      */
-     void play(MusicData musicData) {
+    void play(MusicData musicData) {
 
 
         switch (musicData.getFlag()) {
             case MusicData.START:
+                musicData.setPlaying(false);
+                musicData.setPercent(0);
                 playUrlMusic(musicData.getUrl());
-                updateProcessTask.run();
                 break;
 
             case MusicData.PAUSE://停止播放音乐
@@ -73,22 +74,21 @@ class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
      *         音乐网址，后缀必须为MP3
      */
     private void playUrlMusic(final String url) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mediaPlayer.reset();
-                    mediaPlayer.setDataSource(url);
-                    mediaPlayer.prepare();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+
+        try {
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
+        //播放完毕后设置播放状态false，设置播放百分比0
+        MusicData.getInstance().setPercent(0);
         MusicData.getInstance().setPlaying(false);
         EventBus.getDefault().post(MusicData.getInstance());
     }
@@ -99,11 +99,12 @@ class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
         mediaPlayer.start();
         MusicData.getInstance().setPlaying(true);
         MusicData.getInstance().setTotalSize(mediaPlayer.getDuration());
+        updateProcessTask.run();//音乐准备成功后开始遍历更新状态栏
     }
 
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
-        System.out.println("onBufferingUpdate:"+i);
+        MusicData.getInstance().setCachePercent(i);
     }
 
 

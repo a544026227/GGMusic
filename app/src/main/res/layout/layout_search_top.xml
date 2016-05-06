@@ -12,6 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="搜索音乐、歌曲"
+        android:singleLine="true"
+        android:imeOptions="actionSearch"
         app:met_textColorHint="#99ffffff"
         app:met_baseColor="@color/colorWhite"
         app:met_primaryColor="@color/colorWhite"

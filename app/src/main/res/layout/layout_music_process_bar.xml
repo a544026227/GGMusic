@@ -42,7 +42,7 @@
 
         <View
             android:id="@+id/srcView"
-            android:layout_width="100dp"
+            android:layout_width="0dp"
             android:layout_height="3dp"
             android:background="@drawable/bg_music_process_bar_src"/>
     </FrameLayout>

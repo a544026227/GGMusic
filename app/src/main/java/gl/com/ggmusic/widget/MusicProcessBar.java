@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -105,6 +106,17 @@ public class MusicProcessBar extends RelativeLayout implements View.OnTouchListe
         lp.leftMargin = (int) (processBarWidth * percent + leftMargin);
         vernierImageView.setLayoutParams(lp);
     }
+
+    public void setSrcViewByPercent(float percent) {
+        if (percent < 0 || percent > 1 || processBarWidth == -1) {
+            return;
+        }
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) srcView.getLayoutParams();
+        lp.width = (int) (processBarWidth * percent);
+        srcView.setLayoutParams(lp);
+
+    }
+
 
     /**
      * 游标滚动时的接口

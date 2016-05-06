@@ -32,6 +32,6 @@ public interface ISearchActivity {
      *
      * @param infoBean
      */
-    void playMusic(final KugouSearchListJson.DataBean.InfoBean infoBean);
+    void playMusic(final KugouSearchListJson.DataBean.InfoBean infoBean,String url);
 
 }

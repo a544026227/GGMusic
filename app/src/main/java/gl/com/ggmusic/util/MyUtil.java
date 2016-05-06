@@ -1,13 +1,19 @@
 package gl.com.ggmusic.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.Toast;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import gl.com.ggmusic.constants.Constants;
 
 public class MyUtil {
 
@@ -67,7 +73,7 @@ public class MyUtil {
      * @param str
      */
     public static String getURLEncoder(String str) {
-        if(TextUtils.isEmpty(str)){
+        if (TextUtils.isEmpty(str)) {
             return "";
         }
         try {
@@ -76,5 +82,25 @@ public class MyUtil {
             e.printStackTrace();
             return "getURLEncoder_error";
         }
+    }
+
+    /**
+     * 设置加载图片时的默认图片
+     *
+     * @param loadingRes
+     *         下载期间显示的图片
+     * @param errRes
+     *         图片加载错误显示的图片,传空表示使用默认的
+     */
+    public static DisplayImageOptions getImageLoaderOptions(@NonNull Integer loadingRes, Integer errRes) {
+        return new DisplayImageOptions.Builder()
+                // 设置图片下载期间显示的图片
+                .showImageOnLoading(loadingRes)
+                // 设置图片Uri为空或是错误的时候显示的图片
+                .showImageForEmptyUri(errRes == null ? Constants.ERR_IMAGE : errRes)
+                .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                .bitmapConfig(Bitmap.Config.ARGB_8888) // default 设置图片的解码类型
+                .build();
     }
 }

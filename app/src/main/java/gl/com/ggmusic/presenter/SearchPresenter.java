@@ -4,7 +4,6 @@ import gl.com.ggmusic.bean.KugouInfoJson;
 import gl.com.ggmusic.bean.KugouSearchHintJson;
 import gl.com.ggmusic.bean.KugouSearchListJson;
 import gl.com.ggmusic.constants.URL;
-import gl.com.ggmusic.music.MusicData;
 import gl.com.ggmusic.network.GGHttp;
 import gl.com.ggmusic.util.MyUtil;
 import gl.com.ggmusic.view.ISearchActivity;
@@ -97,15 +96,7 @@ public class SearchPresenter {
         ggHttpInfo.send(new Action1<KugouInfoJson>() {
             @Override
             public void call(KugouInfoJson kugouInfoJson) {
-                MusicData musicData = MusicData.getInstance();
-                musicData.setFlag(MusicData.START);
-                musicData.setUrl(kugouInfoJson.getUrl());
-                musicData.setSinger(infoBean.getSingername());
-                musicData.setSongName(infoBean.getFilename());
-                musicData.setSongLogo("");
-                musicData.setDurtion(infoBean.getDuration());
-                musicData.setHash(infoBean.getHash());
-                searchActivity.playMusic(infoBean);
+                searchActivity.playMusic(infoBean,kugouInfoJson.getUrl());
             }
         });
     }

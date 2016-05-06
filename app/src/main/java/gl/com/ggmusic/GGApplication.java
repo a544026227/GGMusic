@@ -5,8 +5,10 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.IBinder;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -36,7 +38,15 @@ public class GGApplication extends Application {
     }
 
     public void initImageLoader(){
-        ImageLoaderConfiguration configuration = ImageLoaderConfiguration.createDefault(this);
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .showImageOnLoading(Constants.LOADING_IMAGE) // 设置图片下载期间显示的图片
+                .showImageForEmptyUri(Constants.ERR_IMAGE) // 设置图片Uri为空或是错误的时候显示的图片
+                .cacheInMemory(true) // default  设置下载的图片是否缓存在内存中
+                .cacheOnDisk(true) // default  设置下载的图片是否缓存在SD卡中
+                .bitmapConfig(Bitmap.Config.ARGB_8888) // default 设置图片的解码类型
+                .build();
+        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(this)
+                .defaultDisplayImageOptions(options).build();
         ImageLoader.getInstance().init(configuration);
     }
 

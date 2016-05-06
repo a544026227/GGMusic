@@ -3,9 +3,11 @@ package gl.com.ggmusic.activity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -18,9 +20,10 @@ import gl.com.ggmusic.adapter.SearchHintAdapter;
 import gl.com.ggmusic.adapter.SearchListAdapter;
 import gl.com.ggmusic.bean.KugouSearchHintJson;
 import gl.com.ggmusic.bean.KugouSearchListJson;
-import gl.com.ggmusic.music.PlayMusicService;
+import gl.com.ggmusic.music.MusicUtil;
 import gl.com.ggmusic.presenter.SearchPresenter;
 import gl.com.ggmusic.util.DensityUtils;
+import gl.com.ggmusic.util.KeyBoardUtils;
 import gl.com.ggmusic.view.ISearchActivity;
 import gl.com.ggmusic.widget.FlowLayout;
 
@@ -95,6 +98,16 @@ public class SearchActivity extends BaseActivity implements ISearchActivity {
                 searchPresenter.getMusicInfo(searchListAdapter.getList().get(i));
             }
         });
+        searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEARCH) {
+                    searchPresenter.setSearchList(searchEditText.getText().toString());
+                    return true;
+                }
+                return false;
+            }
+        });
 
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -141,6 +154,8 @@ public class SearchActivity extends BaseActivity implements ISearchActivity {
 
     @Override
     public void setSearchListAdapter(KugouSearchListJson kugouSearchListJson) {
+
+        KeyBoardUtils.closeKeybord(searchEditText, context);
         hotSearchFlowLayout.setVisibility(View.GONE);
         searchHintAdapter.getList().clear();
         searchHintAdapter.notifyDataSetChanged();
@@ -157,9 +172,9 @@ public class SearchActivity extends BaseActivity implements ISearchActivity {
     }
 
 
-    public void playMusic(final KugouSearchListJson.DataBean.InfoBean infoBean) {
-        PlayMusicService.startService(context);
-        startActivity(MusicInfoActivity.class);
+    public void playMusic(final KugouSearchListJson.DataBean.InfoBean infoBean, String url) {
+        MusicUtil.playMusic(url, infoBean.getSingername(), infoBean.getFilename(),
+                infoBean.getDuration(), infoBean.getHash(), context);
     }
 
 }

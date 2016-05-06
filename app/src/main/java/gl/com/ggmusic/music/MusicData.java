@@ -31,7 +31,7 @@ public class MusicData {
 
 
     /**
-     * 播放音乐的状态,暂停播放还是停止什么的
+     * 这个状态很重要，直接觉得startMusicService进行什么操作,暂停播放还是停止什么的
      */
     private int flag;
     /**
@@ -74,6 +74,10 @@ public class MusicData {
      * 歌曲hash值
      */
     private String hash ;
+    /**
+     * 歌曲缓存的进度
+     */
+    private int cachePercent;
 
     private static MusicData musicData;
 
@@ -181,6 +185,14 @@ public class MusicData {
 
     public String getHash() {
         return hash;
+    }
+
+    public int getCachePercent() {
+        return cachePercent;
+    }
+
+    public void setCachePercent(int cachePercent) {
+        this.cachePercent = cachePercent;
     }
 
     public void setHash(String hash) {

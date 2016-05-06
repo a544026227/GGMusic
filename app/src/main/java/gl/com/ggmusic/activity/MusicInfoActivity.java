@@ -69,6 +69,9 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
     private ImageView startImageView;
     private ImageView nextImageView;
     private ImageView menuImageView;
+    /**
+     * 音乐进度条的自定义控件
+     */
     private MusicProcessBar musicProcessBar;
 
     private View centerView;
@@ -100,11 +103,10 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
 
     @Override
     void initView() {
-        //初始化toolBar
-        initToolBar(musicData.getSongName());
-        toolbar.setSubtitle(musicData.getSinger());
-        toolbar.inflateMenu(R.menu.menu_music_info_share);
-        toolbar.setBackgroundColor(0x00000000);
+        initToolBar();
+
+        setViewStatus(musicData.isPlaying());
+
         //当前界面无须显示bottomView
         bottomMusicView.setVisibility(View.GONE);
 
@@ -113,16 +115,29 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
         //获取歌词
         presenter.setMusicLrc(musicData);
 
+        //给当前界面加上一层灰色背景
         View view = new View(context);
         view.setBackgroundColor(0x88000000);
-        view.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        view.setLayoutParams(new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         outmosterRelativeLayout.addView(view, 0);
-
         //设置上边距，显示状态栏
         outmosterRelativeLayout.setPadding
                 (0, Constants.statusHeight, 0, Constants.navigationBarheight);
 
-        setViewStatus(musicData.isPlaying());
+        displayHeadImage(musicData.getSongLogo());
+
+
+    }
+
+    /**
+     * 初始化toolBar
+     */
+    private void initToolBar() {
+        initToolBar(musicData.getSongName());
+        toolbar.setSubtitle(musicData.getSinger());
+        toolbar.inflateMenu(R.menu.menu_music_info_share);
+        toolbar.setBackgroundColor(0x00000000);
     }
 
     @Override

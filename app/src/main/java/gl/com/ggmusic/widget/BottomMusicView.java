@@ -10,11 +10,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import gl.com.ggmusic.R;
 import gl.com.ggmusic.activity.MusicInfoActivity;
 import gl.com.ggmusic.constants.Constants;
 import gl.com.ggmusic.music.MusicData;
 import gl.com.ggmusic.music.PlayMusicService;
+import gl.com.ggmusic.util.MyUtil;
 
 /**
  * 底部音乐播放的控件，一个很核心的类
@@ -90,6 +93,9 @@ public class BottomMusicView extends RelativeLayout implements View.OnClickListe
             case R.id.nextImageView:
                 break;
             case R.id.parentRelativeLayout:
+                if (!isPlaying) {
+                    return;//没有正在播放不能跳转
+                }
                 context.startActivity(new Intent(context, MusicInfoActivity.class));
                 break;
             default:
@@ -106,6 +112,8 @@ public class BottomMusicView extends RelativeLayout implements View.OnClickListe
         setImageResource();
         songNameTextView.setText(musicData.getSongName());
         singerNameTextView.setText(musicData.getSinger());
+        ImageLoader.getInstance().displayImage(musicData.getSongLogo(), headImageView,
+                MyUtil.getImageLoaderOptions(R.mipmap.about_logo, R.mipmap.about_logo));
         updateProcess(musicData.getPercent());
     }
 
