@@ -7,8 +7,6 @@ public interface IMusicInfoActivity {
 
     void initAnimation();
 
-    void setBackGround();
-
     void displayHeadImage(String url);
 
 }

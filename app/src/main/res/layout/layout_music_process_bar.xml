@@ -36,23 +36,30 @@
 
         <View
             android:id="@+id/dstView"
-            android:layout_height="match_parent"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@drawable/bg_music_process_bar_dst"/>
 
         <View
-            android:id="@+id/srcView"
+            android:id="@+id/cacheView"
             android:layout_width="0dp"
             android:layout_height="3dp"
-            android:background="@drawable/bg_music_process_bar_src"/>
+            android:background="@drawable/bg_music_process_bar_cache"/>
+
+        <View
+            android:id="@+id/playedView"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:background="@drawable/bg_music_process_bar_played"/>
+
     </FrameLayout>
 
     <ImageView
-        android:layout_width="20dp"
         android:id="@+id/vernierImageView"
+        android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginLeft="-10dp"
         android:layout_toRightOf="@+id/startTimeTextView"
-        android:src="@mipmap/live_color_7_prs"/>
+        android:src="@mipmap/icon_music_veriner"/>
 
 </RelativeLayout>

@@ -5,6 +5,8 @@ import android.os.Handler;
 
 import org.greenrobot.eventbus.EventBus;
 
+import gl.com.ggmusic.bean.EventBusMusicInfo;
+
 /**
  * Created by guilinlin on 16/4/19 17:46.
  * desc:轮询更新播放进度,更新MusicData中的播放进度
@@ -24,6 +26,7 @@ public class UpdateProcessTask implements Runnable {
         MusicData musicData = MusicData.getInstance();
         float p = mediaPlayer.getCurrentPosition() / (float) MusicData.getInstance().getTotalSize();
         musicData.setPercent(p);
+        EventBus.getDefault().post(new EventBusMusicInfo(p));//通知音乐界面更新进度条及歌词
         EventBus.getDefault().post(musicData);
         if (musicData.isPlaying()) {//如果正在播放，才执行轮询操作
             handler.postDelayed(this, 200);

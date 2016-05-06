@@ -12,6 +12,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import gl.com.ggmusic.R;
+import gl.com.ggmusic.music.MusicData;
+import gl.com.ggmusic.music.MusicUtil;
 import gl.com.ggmusic.util.DensityUtils;
 
 /**
@@ -28,7 +30,11 @@ public class MusicProcessBar extends RelativeLayout implements View.OnTouchListe
     /**
      * 前景进度条，用于显示下载进度
      */
-    private android.view.View srcView;
+    private android.view.View cacheView;
+    /**
+     * 播放进度条，用于播放进度
+     */
+    private android.view.View playedView;
     /**
      * 音乐游标，标记歌曲播放到哪儿
      */
@@ -39,6 +45,11 @@ public class MusicProcessBar extends RelativeLayout implements View.OnTouchListe
      */
     private int processBarWidth = -1;
     private int leftMargin = 0;
+
+    /**
+     * 游标是否正在被拖动，true的时候不能被其他Event修改
+     */
+    private boolean isSwiping = false;
 
     public MusicProcessBar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,8 +64,9 @@ public class MusicProcessBar extends RelativeLayout implements View.OnTouchListe
     private void initView(Context context) {
         LayoutInflater.from(context).inflate(R.layout.layout_music_process_bar, this, true);
         this.vernierImageView = (ImageView) findViewById(R.id.vernierImageView);
-        this.srcView = findViewById(R.id.srcView);
+        this.cacheView = findViewById(R.id.cacheView);
         this.dstView = findViewById(R.id.dstView);
+        this.playedView = findViewById(R.id.playedView);
         this.endTimeTextView = (TextView) findViewById(R.id.endTimeTextView);
         this.startTimeTextView = (TextView) findViewById(R.id.startTimeTextView);
 
@@ -71,6 +83,7 @@ public class MusicProcessBar extends RelativeLayout implements View.OnTouchListe
         //第一次按下时记录x坐标，移动时减去这个坐标，确保滑动正确
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
             startX = motionEvent.getX();
+            isSwiping = true;
         }
         //滑动或者抬起
         else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE
@@ -82,11 +95,18 @@ public class MusicProcessBar extends RelativeLayout implements View.OnTouchListe
             if (lm >= leftMargin && lm <= processBarWidth + leftMargin) {
                 float percent = (lm - leftMargin) / (float) processBarWidth;
                 setVernierLocation(percent);
+                setStartTimeTextView(percent);
+                setPlayedViewByPercent(percent);
                 if (listener != null) {
-                    listener.onSlide(percent);
+                    listener.onSlide(motionEvent.getAction(), percent);
                 }
             }
+
+            if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                isSwiping = false;
+            }
         }
+
 
         return true;
     }
@@ -101,20 +121,56 @@ public class MusicProcessBar extends RelativeLayout implements View.OnTouchListe
      *
      * @param percent
      */
-    private void setVernierLocation(float percent) {
+    public void setVernierLocation(float percent) {
         LayoutParams lp = (LayoutParams) vernierImageView.getLayoutParams();
         lp.leftMargin = (int) (processBarWidth * percent + leftMargin);
         vernierImageView.setLayoutParams(lp);
     }
 
-    public void setSrcViewByPercent(float percent) {
+
+    /**
+     * 根据百分比设置表示缓存的进度条
+     *
+     * @param percent
+     */
+    public void setCacheViewByPercent(float percent) {
         if (percent < 0 || percent > 1 || processBarWidth == -1) {
             return;
         }
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) srcView.getLayoutParams();
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) cacheView.getLayoutParams();
         lp.width = (int) (processBarWidth * percent);
-        srcView.setLayoutParams(lp);
+        cacheView.setLayoutParams(lp);
 
+    }
+
+    /**
+     * 根据百分比设置播放进度条
+     *
+     * @param percent
+     */
+    public void setPlayedViewByPercent(float percent) {
+        if (percent < 0 || percent > 1 || processBarWidth == -1) {
+            return;
+        }
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) playedView.getLayoutParams();
+        lp.width = (int) (processBarWidth * percent);
+        playedView.setLayoutParams(lp);
+
+    }
+
+
+    public void setStartTimeTextView(float percent) {
+        String s = MusicUtil.getTimeBySecond((int) (MusicData.getInstance().getDurtion()
+                * percent));
+        startTimeTextView.setText(s);
+    }
+
+    public void setEndTimeTextView(String text) {
+        endTimeTextView.setText(text);
+    }
+
+    public boolean isSwiping() {
+        return isSwiping;
     }
 
 
@@ -122,7 +178,15 @@ public class MusicProcessBar extends RelativeLayout implements View.OnTouchListe
      * 游标滚动时的接口
      */
     public interface OnVernierSlideListener {
-        void onSlide(float percent);
+        /**
+         * 拖动游标时触发的事件
+         *
+         * @param action
+         *         表示哪一种操作，EventActon.ACTION_MOVE等等
+         * @param percent
+         *         拖动到的百分比位置
+         */
+        void onSlide(int action, float percent);
     }
 
     private OnVernierSlideListener listener;

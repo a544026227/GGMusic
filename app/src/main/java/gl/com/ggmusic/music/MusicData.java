@@ -28,6 +28,10 @@ public class MusicData {
      * 播放结束
      */
     public static final int END = 5;
+    /**
+     * 选择播放节点
+     */
+    public static final int SELECT = 6;
 
 
     /**
@@ -78,6 +82,10 @@ public class MusicData {
      * 歌曲缓存的进度
      */
     private int cachePercent;
+    /**
+     * 选择歌曲的时间百分比，比如总时间2：00，设置0.5，就表示跳转到1：00开始播放
+     */
+    private float selectTimePercent ;
 
     private static MusicData musicData;
 
@@ -105,6 +113,14 @@ public class MusicData {
 
     public void setFlag(int flag) {
         this.flag = flag;
+    }
+
+    public float getSelectTimePercent() {
+        return selectTimePercent;
+    }
+
+    public void setSelectTimePercent(float selectTimePercent) {
+        this.selectTimePercent = selectTimePercent;
     }
 
     public String getUrl() {

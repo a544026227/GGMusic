@@ -40,6 +40,12 @@ public class MusicUtil {
         getSongLogo(singer, musicData);
     }
 
+    /**
+     * 获取歌手头像，获取成功后发消息更新底部音乐栏
+     *
+     * @param singer
+     * @param musicData
+     */
     private static void getSongLogo(String singer, final MusicData musicData) {
         GGHttp<KugouImageHeadJson> ggHttpInfo = new GGHttp<>(URL.KUGOU_HEAD_IMAGE, KugouImageHeadJson.class);
         ggHttpInfo.setMethodType("GET");
@@ -53,10 +59,30 @@ public class MusicUtil {
                 if (kugouImageHeadJson.getStatus() == 1) {
                     musicData.setSongLogo(kugouImageHeadJson.getUrl());
                     EventBus.getDefault().post(musicData);
+                }else{
+                    musicData.setSongLogo("");
+                    EventBus.getDefault().post(musicData);
                 }
             }
         });
     }
 
+    /**
+     * 根据传入的秒返回01：22格式的字符串
+     */
+    public static final String getTimeBySecond(int time) {
+        int minute = time / 60;
+        int second = time % 60;
+        StringBuffer sb = new StringBuffer();
+        if (minute < 10) {
+            sb.append('0');
+        }
+        sb.append(minute).append(':');
+        if (second < 10) {
+            sb.append('0');
+        }
+        sb.append(second);
+        return sb.toString();
+    }
 
 }

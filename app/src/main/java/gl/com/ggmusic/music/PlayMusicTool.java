@@ -61,6 +61,13 @@ class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 }
                 updateProcessTask.run();
                 break;
+            case MusicData.SELECT:
+                //跳转到指定毫秒位置
+                mediaPlayer.seekTo((int) (musicData.getDurtion() * musicData.getSelectTimePercent() * 1000));
+                if(!mediaPlayer.isPlaying()){
+                    mediaPlayer.start();
+                }
+                break;
             default:
                 break;
         }

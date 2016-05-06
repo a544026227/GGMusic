@@ -2,10 +2,12 @@ package gl.com.ggmusic.activity;
 
 import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -19,12 +21,17 @@ import android.widget.RelativeLayout;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import gl.com.ggmusic.R;
+import gl.com.ggmusic.bean.EventBusMusicInfo;
 import gl.com.ggmusic.constants.Constants;
 import gl.com.ggmusic.music.MusicData;
+import gl.com.ggmusic.music.MusicUtil;
 import gl.com.ggmusic.music.PlayMusicService;
 import gl.com.ggmusic.presenter.MusicInfoPresenter;
 import gl.com.ggmusic.util.BitmapUtil;
+import gl.com.ggmusic.util.MyUtil;
 import gl.com.ggmusic.view.IMusicInfoActivity;
 import gl.com.ggmusic.widget.CircleImageView;
 import gl.com.ggmusic.widget.MusicProcessBar;
@@ -34,12 +41,8 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivity, View.OnClickListener, MusicProcessBar.OnVernierSlideListener {
-
-    /**
-     * 临时存储歌词文件的名称
-     */
-    public String TEMPORARY_FILE_NAME = "temporary.krc";
+public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivity, View.OnClickListener, MusicProcessBar
+        .OnVernierSlideListener {
 
     private MusicInfoPresenter presenter;
     private MusicData musicData;
@@ -74,9 +77,6 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
      */
     private MusicProcessBar musicProcessBar;
 
-    private View centerView;
-
-
     public MusicInfoActivity() {
         setContentView(R.layout.activity_music_info);
     }
@@ -88,18 +88,13 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
 
         musicData = MusicData.getInstance();
 
-        this.needleImageView = (ImageView) findViewById(R.id.needleImageView);
-        this.menuImageView = (ImageView) findViewById(R.id.menuImageView);
-        this.nextImageView = (ImageView) findViewById(R.id.nextImageView);
-        this.startImageView = (ImageView) findViewById(R.id.startImageView);
-        this.prevImageView = (ImageView) findViewById(R.id.prevImageView);
-        this.circulationImageView = (ImageView) findViewById(R.id.circulationImageView);
-        this.diskImageView = (ImageView) findViewById(R.id.diskImageView);
-        this.songLogoImageView = (CircleImageView) findViewById(R.id.songLogoImageView);
-        this.musicProcessBar = (MusicProcessBar) findViewById(R.id.musicProcessBar);
+        findView();
 
         initAnimation();
+
+
     }
+
 
     @Override
     void initView() {
@@ -114,6 +109,8 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
         presenter.setSingerHeadImage(musicData.getSinger());
         //获取歌词
         presenter.setMusicLrc(musicData);
+        //设置结束时间
+        setEndTime();
 
         //给当前界面加上一层灰色背景
         View view = new View(context);
@@ -131,6 +128,13 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
     }
 
     /**
+     * 设置结束时间
+     */
+    private void setEndTime() {
+        musicProcessBar.setEndTimeTextView(MusicUtil.getTimeBySecond(musicData.getDurtion()));
+    }
+
+    /**
      * 初始化toolBar
      */
     private void initToolBar() {
@@ -145,8 +149,32 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
         startImageView.setOnClickListener(this);
         musicProcessBar.setOnVernierSlideListener(this);
     }
+
+    /**
+     * 拖动游标时触发的事件
+     */
     @Override
-    public void onSlide(float percent) {
+    public void onSlide(int action, float percent) {
+        if (action == MotionEvent.ACTION_UP) {//手指抬起才更新进度
+            musicData.setFlag(MusicData.SELECT);
+            musicData.setSelectTimePercent(percent);
+            PlayMusicService.startService(context);
+        }
+    }
+
+    /**
+     * 监听音乐播放进度，修改进度条和时间
+     *
+     * @param event
+     */
+    @Subscribe
+    public void onEventMainThread(EventBusMusicInfo event) {
+        if (musicProcessBar.isSwiping()) {
+            return;
+        }
+        musicProcessBar.setVernierLocation(event.percent);
+        musicProcessBar.setStartTimeTextView(event.percent);
+        musicProcessBar.setPlayedViewByPercent(event.percent);
     }
 
     @Override
@@ -195,9 +223,11 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
         }
     }
 
+    /**
+     * 透明状态栏
+     */
     @Override
     protected void superInit() {
-        //透明状态栏
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -254,38 +284,53 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
     }
 
     @Override
-    public void setBackGround() {
-
+    public void displayHeadImage(String url) {
+        ImageLoader.getInstance().displayImage(url, songLogoImageView,
+                MyUtil.getImageLoaderOptions(R.mipmap.about_logo, R.mipmap.about_logo)
+                , new SimpleImageLoadingListener() {
+                    @Override
+                    public void onLoadingComplete(String imageUri, View view, final Bitmap loadedImage) {
+                        Observable
+                                .just(1)
+                                .observeOn(Schedulers.io())
+                                .map(new Func1<Integer, Drawable>() {
+                                    @Override
+                                    public Drawable call(Integer integer) {
+                                        if (loadedImage == null) {
+                                            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.music_info_background);
+                                            bitmap = BitmapUtil.blur(context, bitmap, 25);
+                                            return new BitmapDrawable(bitmap);
+                                        }
+                                        Bitmap bitmap = BitmapUtil.blur(context, loadedImage, 25);
+                                        return new BitmapDrawable(bitmap);
+                                    }
+                                })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Action1<Drawable>() {
+                                    @Override
+                                    public void call(Drawable drawable) {
+                                        outmosterRelativeLayout.setBackgroundDrawable(drawable);
+                                    }
+                                });
+                        //获取到图片并且显示后加载动画
+                        if (musicData.isPlaying()) {
+                            rotationAnimatior.start();
+                        }
+                    }
+                });
     }
 
-    @Override
-    public void displayHeadImage(String url) {
-        ImageLoader.getInstance().displayImage(url, songLogoImageView, new SimpleImageLoadingListener() {
-            @Override
-            public void onLoadingComplete(String imageUri, View view, final Bitmap loadedImage) {
-                Observable
-                        .just(1)
-                        .observeOn(Schedulers.io())
-                        .map(new Func1<Integer, Drawable>() {
-                            @Override
-                            public Drawable call(Integer integer) {
-                                Bitmap bitmap = BitmapUtil.blur(context, loadedImage, 25);
-                                return new BitmapDrawable(bitmap);
-                            }
-                        })
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<Drawable>() {
-                            @Override
-                            public void call(Drawable drawable) {
-                                outmosterRelativeLayout.setBackgroundDrawable(drawable);
-                            }
-                        });
-                //获取到图片并且显示后加载动画
-                if (musicData.isPlaying()) {
-                    rotationAnimatior.start();
-                }
-            }
-        });
+
+    private void findView() {
+        this.needleImageView = (ImageView) findViewById(R.id.needleImageView);
+        this.menuImageView = (ImageView) findViewById(R.id.menuImageView);
+        this.nextImageView = (ImageView) findViewById(R.id.nextImageView);
+        this.startImageView = (ImageView) findViewById(R.id.startImageView);
+        this.prevImageView = (ImageView) findViewById(R.id.prevImageView);
+        this.circulationImageView = (ImageView) findViewById(R.id.circulationImageView);
+        this.diskImageView = (ImageView) findViewById(R.id.diskImageView);
+        this.songLogoImageView = (CircleImageView) findViewById(R.id.songLogoImageView);
+        this.musicProcessBar = (MusicProcessBar) findViewById(R.id.musicProcessBar);
     }
 
 
