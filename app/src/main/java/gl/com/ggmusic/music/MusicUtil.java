@@ -17,7 +17,7 @@ import rx.functions.Action1;
 public class MusicUtil {
 
     /**
-     * 播放音乐工具类
+     * 播放音乐工具类，只要播放音乐都要用这个！！！
      *
      * @param url
      * @param singer
@@ -35,6 +35,7 @@ public class MusicUtil {
         musicData.setSongName(songName);
         musicData.setDurtion(durtion);
         musicData.setHash(hash);
+        musicData.setDownloaded(false);
         PlayMusicService.startService(context);
 
         getSongLogo(singer, musicData);

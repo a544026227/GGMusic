@@ -22,10 +22,13 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import gl.com.ggmusic.R;
 import gl.com.ggmusic.bean.EventBusMusicInfo;
+import gl.com.ggmusic.bean.EventBusMusicInfoDownLoad;
 import gl.com.ggmusic.constants.Constants;
+import gl.com.ggmusic.music.DownloadMusicUtil;
 import gl.com.ggmusic.music.MusicData;
 import gl.com.ggmusic.music.MusicUtil;
 import gl.com.ggmusic.music.PlayMusicService;
@@ -171,17 +174,25 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
 
     /**
      * 监听音乐播放进度，修改进度条和时间
-     *
-     * @param event
      */
-    @Subscribe
-    public void onEventMainThread(EventBusMusicInfo event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(EventBusMusicInfo event) {
+        //如果当前进度条正在被拖动，那么就不能后台播放音乐的服务通知更新
         if (musicProcessBar.isSwiping()) {
             return;
         }
         musicProcessBar.setVernierLocation(event.percent);
         musicProcessBar.setStartTimeTextView(event.percent);
         musicProcessBar.setPlayedViewByPercent(event.percent);
+    }
+
+    /**
+     * 监听音乐下载完成，修改图标
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(EventBusMusicInfoDownLoad event) {
+        showToast("下载完成");
+        downLoadImageView.setImageResource(R.mipmap.play_icn_dlded);
     }
 
     @Override
@@ -198,7 +209,12 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
 
                 break;
             case R.id.downLoadImageView:
-
+                if(musicData.isDownloaded()){
+                    showToast("当前歌曲已下载");
+                    return ;
+                }
+                showToast("开始下载...");
+                DownloadMusicUtil.getInstance().start(musicData.getUrl(),musicData.getSongName());
 
                 break;
             default:

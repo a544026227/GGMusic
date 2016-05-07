@@ -115,7 +115,7 @@
             android:id="@+id/downLoadImageView"
             style="@style/music_info_image_more"
             android:padding="5dp"
-            android:src="@mipmap/play_icn_dlded"/>
+            android:src="@mipmap/play_icn_dld"/>
 
         <ImageView
             android:id="@+id/commentImageView"

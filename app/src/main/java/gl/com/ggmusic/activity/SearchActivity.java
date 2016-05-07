@@ -173,6 +173,7 @@ public class SearchActivity extends BaseActivity implements ISearchActivity {
 
 
     public void playMusic(final KugouSearchListJson.DataBean.InfoBean infoBean, String url) {
+        //只要播放音乐都要用这个！！！
         MusicUtil.playMusic(url, infoBean.getSingername(), infoBean.getFilename(),
                 infoBean.getDuration(), infoBean.getHash(), context);
     }

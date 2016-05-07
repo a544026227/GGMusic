@@ -36,7 +36,7 @@ public class MyUtil {
     public static void t(Context context, Object msg) {
         if (toast == null) {
             toast = Toast.makeText
-                    (context.getApplicationContext(), msg.toString(), Toast.LENGTH_LONG);
+                    (context.getApplicationContext(), msg.toString(), Toast.LENGTH_SHORT);
         } else {
             toast.setText(msg.toString());
         }

@@ -86,6 +86,10 @@ public class MusicData {
      * 选择歌曲的时间百分比，比如总时间2：00，设置0.5，就表示跳转到1：00开始播放
      */
     private float selectTimePercent ;
+    /**
+     * 歌曲是否已经被下载
+     */
+    private boolean isDownloaded = false;
 
     private static MusicData musicData;
 
@@ -161,6 +165,14 @@ public class MusicData {
 
     public String getSongLogo() {
         return songLogo;
+    }
+
+    public boolean isDownloaded() {
+        return isDownloaded;
+    }
+
+    public void setDownloaded(boolean downloaded) {
+        isDownloaded = downloaded;
     }
 
     public void setSongLogo(String songLogo) {

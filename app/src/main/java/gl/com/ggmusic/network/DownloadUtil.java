@@ -1,11 +1,12 @@
 package gl.com.ggmusic.network;
 
+import android.support.annotation.NonNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import gl.com.ggmusic.constants.Constants;
@@ -13,29 +14,31 @@ import gl.com.ggmusic.util.MyUtil;
 
 /**
  * Created by guilinlin on 16/4/18 20:47.
- * email 973635949@qq.com
  */
 public class DownloadUtil {
 
+    private String downloadUrl;
+    private String extension;
+    private String fileName;
+
     /**
-     * 下载文件
-     *
      * @param downloadUrl
      *         下载地址
+     * @param fileName
+     *         文件名，null将使用下载地址的MD5作为文件名
      * @param extension
-     *         文件的后缀名，null表示没有
+     *         文件后缀名,比如 mp3,mp4,null表示没有文件后缀名
      */
-    public void download(final String downloadUrl, final String extension, final DownloadListener listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                startDownload(downloadUrl, extension, listener);
-            }
-        }).start();
-
+    public DownloadUtil(@NonNull String downloadUrl, String fileName, String extension) {
+        this.downloadUrl = downloadUrl;
+        this.extension = extension;
+        this.fileName = fileName;
     }
 
-    private void startDownload(String downloadUrl, String extension, DownloadListener listener) {
+    /**
+     * 下载文件
+     */
+    public void start(DownloadListener listener) {
         InputStream is = null;
         FileOutputStream os = null;
         int responseCode;
@@ -50,7 +53,7 @@ public class DownloadUtil {
             if (responseCode == 200) {
                 totalSize = connection.getContentLength();
                 is = connection.getInputStream();
-                os = new FileOutputStream(getFile(downloadUrl, extension));
+                os = new FileOutputStream(getFile());
                 int len;
                 byte[] buffer = new byte[1024];
                 while ((len = is.read(buffer)) != -1) {
@@ -63,8 +66,6 @@ public class DownloadUtil {
                 is.close();
                 os.close();
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -79,26 +80,22 @@ public class DownloadUtil {
         }
     }
 
-    public File getFile(String url, String extension) {
-        File dir = new File("/a/a");
-        System.out.println("dir:" + Constants.DOWNLOAD_PATH);
-        if (!dir.isDirectory() || !dir.exists()) {
-            System.out.println(dir.mkdirs());
+    /**
+     * 获取一个文件对象
+     */
+    public File getFile() {
+        StringBuilder sb = new StringBuilder(Constants.DOWNLOAD_PATH).append("/");
+        if (fileName == null) {//如果没有传入文件名使用网址的MD5作为文件名
+            sb.append(MyUtil.getMD5(downloadUrl));
+        } else {
+            sb.append(fileName);
         }
-
-        StringBuffer sb = new StringBuffer(Constants.DOWNLOAD_PATH).append("/");
-        sb.append(MyUtil.getMD5(url));
-        if (extension != null)
-
-        {
+        if (extension != null) {//如果传入的后缀名为空则不要后缀名
             sb.append('.').append(extension);
         }
 
         File file = new File(sb.toString());
-        System.out.println("Filepath:" + sb.toString());
-        if (!file.exists())
-
-        {
+        if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (IOException e) {
@@ -121,6 +118,6 @@ public class DownloadUtil {
          * @param percent
          *         已下载所占的百分比
          */
-        public void process(int hasDownloadSize, int totalSize, float percent);
+        void process(int hasDownloadSize, int totalSize, float percent);
     }
 }

@@ -32,7 +32,7 @@ import gl.com.ggmusic.widget.BottomMusicView;
  * 注意事项:
  * 1.构造方法中需调用setContentView()；
  */
-public class MainActivity extends BaseActivity implements IMainActivity,View.OnClickListener {
+public class MainActivity extends BaseActivity implements IMainActivity, View.OnClickListener {
 
 
     /**
@@ -207,7 +207,7 @@ public class MainActivity extends BaseActivity implements IMainActivity,View.OnC
     private void mkDir() {
         File dir = new File(Constants.DOWNLOAD_PATH);
         if (!dir.exists()) {
-            System.out.println(dir.mkdirs());
+            dir.mkdirs();
         }
     }
 

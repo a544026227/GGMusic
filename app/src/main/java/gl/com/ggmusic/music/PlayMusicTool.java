@@ -58,8 +58,8 @@ class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
                 if (!mediaPlayer.isPlaying()) {
                     mediaPlayer.start();
                     musicData.setPlaying(true);
+                    updateProcessTask.run();
                 }
-                updateProcessTask.run();
                 break;
             case MusicData.SELECT:
                 //跳转到指定毫秒位置
@@ -102,7 +102,6 @@ class PlayMusicTool implements MediaPlayer.OnCompletionListener, MediaPlayer.OnP
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-        System.out.println("onPrepared");
         mediaPlayer.start();
         MusicData.getInstance().setPlaying(true);
         MusicData.getInstance().setTotalSize(mediaPlayer.getDuration());
