@@ -38,9 +38,26 @@
         <item name="android:layout_marginLeft">5dp</item>
         <item name="android:layout_marginRight">5dp</item>
     </style>
+
     <style name="music_info_image_center">
         <item name="android:layout_height">70dp</item>
         <item name="android:layout_width">70dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/default_image_pressed</item>
+    </style>
+    <!--音乐播放界面喜欢、下载、评论那一排按钮的style-->
+    <style name="music_info_image_more">
+        <item name="android:layout_height">50dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_width">50dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/default_image_pressed</item>
+    </style>
+
+    <style name="music_info_image_more2">
+        <item name="android:layout_height">60dp</item>
+        <item name="android:layout_width">60dp</item>
         <item name="android:clickable">true</item>
         <item name="android:background">@drawable/default_image_pressed</item>
     </style>

@@ -76,6 +76,12 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
      * 音乐进度条的自定义控件
      */
     private MusicProcessBar musicProcessBar;
+    private View centerView;
+    private RelativeLayout titleRelativeLayut;
+    private ImageView loveImageView;
+    private ImageView downLoadImageView;
+    private ImageView commentImageView;
+    private ImageView moreImageView;
 
     public MusicInfoActivity() {
         setContentView(R.layout.activity_music_info);
@@ -148,6 +154,7 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
     void setListener() {
         startImageView.setOnClickListener(this);
         musicProcessBar.setOnVernierSlideListener(this);
+        downLoadImageView.setOnClickListener(this);
     }
 
     /**
@@ -190,7 +197,10 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
                 PlayMusicService.startService(context);
 
                 break;
+            case R.id.downLoadImageView:
 
+
+                break;
             default:
                 break;
         }
@@ -322,15 +332,21 @@ public class MusicInfoActivity extends BaseActivity implements IMusicInfoActivit
 
 
     private void findView() {
-        this.needleImageView = (ImageView) findViewById(R.id.needleImageView);
+        this.moreImageView = (ImageView) findViewById(R.id.moreImageView);
+        this.commentImageView = (ImageView) findViewById(R.id.commentImageView);
+        this.downLoadImageView = (ImageView) findViewById(R.id.downLoadImageView);
+        this.loveImageView = (ImageView) findViewById(R.id.loveImageView);
+        this.musicProcessBar = (MusicProcessBar) findViewById(R.id.musicProcessBar);
+        this.titleRelativeLayut = (RelativeLayout) findViewById(R.id.titleRelativeLayut);
         this.menuImageView = (ImageView) findViewById(R.id.menuImageView);
         this.nextImageView = (ImageView) findViewById(R.id.nextImageView);
         this.startImageView = (ImageView) findViewById(R.id.startImageView);
         this.prevImageView = (ImageView) findViewById(R.id.prevImageView);
         this.circulationImageView = (ImageView) findViewById(R.id.circulationImageView);
-        this.diskImageView = (ImageView) findViewById(R.id.diskImageView);
+        this.needleImageView = (ImageView) findViewById(R.id.needleImageView);
         this.songLogoImageView = (CircleImageView) findViewById(R.id.songLogoImageView);
-        this.musicProcessBar = (MusicProcessBar) findViewById(R.id.musicProcessBar);
+        this.diskImageView = (ImageView) findViewById(R.id.diskImageView);
+        this.centerView =  findViewById(R.id.centerView);
     }
 
 

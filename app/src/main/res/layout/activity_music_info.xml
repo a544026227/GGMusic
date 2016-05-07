@@ -37,7 +37,6 @@
             android:layout_gravity="center"/>
     </FrameLayout>
 
-
     <ImageView
         android:id="@+id/needleImageView"
         android:layout_width="120dp"
@@ -56,9 +55,9 @@
 
         <ImageView
             android:id="@+id/circulationImageView"
-            style="@style/main_actionbar_image"
+            style="@style/music_info_image_more2"
             android:layout_centerVertical="true"
-            android:src="@mipmap/actionbar_menu"/>
+            android:src="@mipmap/play_icn_one"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -84,10 +83,10 @@
 
         <ImageView
             android:id="@+id/menuImageView"
-            style="@style/main_actionbar_image"
+            style="@style/music_info_image_more2"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@mipmap/actionbar_menu"/>
+            android:src="@mipmap/play_icn_src"/>
     </RelativeLayout>
 
     <gl.com.ggmusic.widget.MusicProcessBar
@@ -98,5 +97,35 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"/>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_above="@+id/musicProcessBar"
+        android:layout_centerInParent="true">
+
+
+        <ImageView
+            android:id="@+id/loveImageView"
+            style="@style/music_info_image_more"
+            android:src="@mipmap/play_fm_btn_love"/>
+
+        <ImageView
+            android:id="@+id/downLoadImageView"
+            style="@style/music_info_image_more"
+            android:padding="5dp"
+            android:src="@mipmap/play_icn_dlded"/>
+
+        <ImageView
+            android:id="@+id/commentImageView"
+            style="@style/music_info_image_more"
+            android:src="@mipmap/play_fm_btn_cmt"/>
+
+        <ImageView
+            android:id="@+id/moreImageView"
+            style="@style/music_info_image_more"
+            android:src="@mipmap/play_rdi_icn_more"/>
+    </LinearLayout>
 
 </RelativeLayout>
